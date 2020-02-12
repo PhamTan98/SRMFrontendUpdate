@@ -1,0 +1,979 @@
+<!-- Filter  -->
+<div class="col-md-12 card-action">
+    <div class="row">
+        <div class="col-md-4 row" style="padding-left: 20px;">
+            <label class="col-4" style="line-height: 2.5;">Khóa sakura:</label>
+            <div class="col-8 form-group" style="padding-right: 0; padding-left: 0;">
+                <ng-select [items]="listSakura" bindValue="Id" placeholder="Chọn khóa" bindLabel="Name" [markFirst]="false" [(ngModel)]="myFilter.IdSakuraCampus">
+                </ng-select>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row float-right" style="padding-right: 50px;">
+                <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: 15px;"
+                    data-toggle="modal" data-target="#modalAddTest">
+                    <i class="fas fa-plus"></i> Thêm bài test
+                </button>
+                <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: 15px;"
+                    data-toggle="modal" data-target="#modalContactFormTest">
+                    Loại Hình Kiểm Tra
+                </button>
+            </div>
+        </div>       
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-md-12 row text-sm-center">
+        <div style="padding-left: 45px;">
+            <span>{{(listBaiTest | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+                {{itemsPerPage*p <= (listBaiTest | filterBy: myFilter).length? itemsPerPage*p : (listBaiTest | filterBy: myFilter).length}}
+                of {{(listBaiTest | filterBy: myFilter).length}}
+            </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p = $event" id="first" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+</div>
+
+<!-- List bai test -->
+<div class="row table-row">
+    <div class="col-md-12">
+        <div class="card data-card">
+            <div class="col-md-12 card-action">
+                <div class="row">
+                </div>
+            </div>
+            <div class="card-body data-card-body">
+                <table class="table table-striped table-hover">
+                    <thead class=" text-primary">
+                        <th [class.active]="order === 'Id'" (click)="setOrder('Id')" class="cursor" title="Filter by Id">
+                            Id <span class="fas fa-sort" *ngIf="order != 'Id'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'Id'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th [class.active]="order === 'FullName'" (click)="setOrder('FullName')" class="cursor" title="Filter by FullName">
+                            Tên <span class="fas fa-sort" *ngIf="order != 'FullName'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'FullName'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th>
+                            Khóa Sakura
+                        </th>
+                        <th>
+                            Nội dung
+                        </th>
+                        <th>
+                            Loại Test
+                        </th>
+                        <!-- <th class="d-none d-md-table-cell">
+                            Ghi Chú
+                        </th> -->
+                        <th class="d-none d-sm-table-cell" [class.active]="order === 'ExpectedDate'" (click)="setOrder('ExpectedDate')" class="cursor" title="Filter by ExpectedDate">
+                            Time dự Kiến <span class="fas fa-sort" *ngIf="order != 'ExpectedDate'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'ExpectedDate'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th class="d-none d-sm-table-cell">
+                            Status
+                        </th>
+                        <th class="">
+                            Acction
+                        </th>
+
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of listBaiTest | orderBy: order:reverse:'case-insensitive' | filterBy: myFilter | paginate: { itemsPerPage: itemsPerPage, currentPage: p, id: 'first' }; let i = index">
+                            <td class="text-center stt">
+                                {{s.Id}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left">
+                                {{s.Name}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-center">
+                                {{s.IdSakuraCampus}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left">
+                                {{s.Details}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left">
+                                {{s.LstIdTestSubject}}
+                            </td>
+                            <!-- <td class="d-none d-sm-table-cell text-left">
+                                {{s.Note}}
+                            </td> -->
+                            <td class="d-none d-sm-table-cell text-center">
+                                {{s.ExpectedDate}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-center">
+                                <div [className]="badgeStatus(s.Status).classStatus">{{badgeStatus(s.Status).label}}</div>
+                            </td>
+                            <td class="text-center align-items-center action-sv">
+                                <div ngbDropdown>
+                                    <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                                        <button class="item" data-toggle="tooltip" title="Duyệt" id="dropdownBasic2" ngbDropdownToggle></button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="display: inline; transition: none;">
+                                            <button ngbDropdownItem data-toggle="modal" data-target="#modalTestDetail" (click)="showTestDetail(s.Id)">Show</button>
+                                            <button ngbDropdownItem data-toggle="modal" data-target="#modalUpdateTest" (click)="showTestUpdate(s.Id)">Update</button>
+                                            <button ngbDropdownItem data-toggle="modal" data-target="#modalContactFormDeleteTest" (click)="getInfoTestDelete(s.Id)">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="(listBaiTest | filterBy: myFilter).length === 0" class="no-item text-center col-12">
+                    <p>Không tìm thấy bài test nào.</p>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-md-12 row text-sm-center">
+        <div style="padding-left: 45px;">
+            <span>{{(listBaiTest | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+                {{itemsPerPage*p <= (listBaiTest | filterBy: myFilter).length? itemsPerPage*p : (listBaiTest | filterBy: myFilter).length}}
+                of {{(listBaiTest | filterBy: myFilter).length}}
+            </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p = $event" id="first" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal list loại hình kiểm tra -->
+<div class="modal fade" id="modalContactFormTest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog  modal-w-750" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Loại Hình Kiểm Tra Đầu Vào </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="card-body data-card-body">
+                <table class="table table-striped table-hover">
+                    <thead class=" text-primary">
+                        <th>ID</th>
+                        <th>Loại Hình Kiểm Tra Đầu Vào</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let s of ListTestSubject | orderBy: order:reverse:'case-insensitive' | paginate: { itemsPerPage: itemsPerPage, currentPage: p2, id: 'second' }; let i = index">
+                            <td class="text-center">
+                                {{s.Id}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-center">
+                                {{s.Name}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-center">
+                                <div [className]="badgeStatus(s.Status).classStatus">{{badgeStatus(s.Status).label}}</div>
+                            </td>
+                            <td class="d-none d-sm-table-cell text-center align-items-center action-sv">
+                                <div ngbDropdown>
+                                    <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                                        <button class="item" data-toggle="tooltip" title="Duyệt" id="dropdownBasic2"ngbDropdownToggle></button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic2" style="display: inline; transition: none;">
+                                            <button ngbDropdownItem data-toggle="modal"data-target="#modalContactFormCreatTest" (click)="resetAddTypeTestForm()">
+                                                Thêm Mới
+                                            </button>
+                                            <button ngbDropdownItem data-toggle="modal"data-target="#modalContactFormUpdateTest"(click)="showEditTest(s.Id)">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Pagination -->
+                <div class="row pagi" style="margin-right: 0px;">
+                    <div class="col-md-6 row text-sm-center">
+                        <div style="padding-left: 45px;">
+                            <span>{{ListTestSubject.length === 0? 0 : itemsPerPage*(p2-1) + 1}} - {{itemsPerPage*p2 < ListTestSubject.length? itemsPerPage*p2 : ListTestSubject.length}}
+                                of {{ListTestSubject.length}}
+                            </span>
+                        </div>
+                        <div style="padding-left: 15px;">
+                            <pagination-controls (pageChange)="p2 = $event" id="second" class="pagination-control" previousLabel="Prev">
+                            </pagination-controls>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal create test type -->
+<div class="modal fade" id="modalContactFormCreatTest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Thêm loại hình kiểm tra đầu vào</h4>
+                <button #closeModalAddTypeTest type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form class="modal-body mx-3" [formGroup]="AddTypeTestForm" (ngSubmit)="onSubmitAddListTestSubject()">
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fa fa-id-badge prefix grey-text"></i>
+                        <input formControlName="Id" type="text" id="Id" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && addTypeTestForm.Id.errors }" >
+                        <label for="Id">ID</label>
+                        <div *ngIf="submitted && addTypeTestForm.Id.errors" class="invalid-feedback">
+                            <div *ngIf="addTypeTestForm.Id.errors.required">Id không được để trống!</div>
+                            <div *ngIf="addTypeTestForm.Id.errors.minlength">Id quá ngắn!</div>
+                            <div *ngIf="addTypeTestForm.Id.errors.maxlength">Id quá dài!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <input formControlName="Name" type="text" id="Name" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && addTypeTestForm.Name.errors }">
+                        <label for="Name">Name</label>
+                        <div *ngIf="submitted && addTypeTestForm.Name.errors" class="invalid-feedback">
+                            <div *ngIf="addTypeTestForm.Name.errors.required">Name không được để trống!</div>
+                            <div *ngIf="addTypeTestForm.Name.errors.minlength">Name quá ngắn!</div>
+                            <div *ngIf="addTypeTestForm.Name.errors.maxlength">Name quá dài!</div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-list-ul prefix grey-text"></i>
+                        <input formControlName="Max" type="number" id="Max" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && addTypeTestForm.Max.errors }">
+                        <label for="Max">Maximum</label>
+                        <div *ngIf="submitted && addTypeTestForm.Max.errors" class="invalid-feedback">
+                            <div *ngIf="addTypeTestForm.Max.errors.required">Max không được để trống!</div>
+                            <div *ngIf="addTypeTestForm.Max.errors.minlength">Max quá ngắn!</div>
+                            <div *ngIf="addTypeTestForm.Max.errors.maxlength">Max quá dài!</div>
+                            <div *ngIf="addTypeTestForm.Max.errors.min">Pass không thể nhỏ hơn 0</div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="far fa-check-circle prefix grey-text"></i>
+                        <input formControlName="Pass" type="number" id="Pass" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && addTypeTestForm.Pass.errors }">
+                        <label for="Min">Pass</label>
+                        <div *ngIf="submitted && addTypeTestForm.Pass.errors" class="invalid-feedback">
+                            <div *ngIf="addTypeTestForm.Pass.errors.required">Pass không được để trống!</div>
+                            <div *ngIf="addTypeTestForm.Pass.errors.minlength">Pass quá ngắn!</div>
+                            <div *ngIf="addTypeTestForm.Pass.errors.maxlength">Pass quá dài!</div>
+                            <div *ngIf="addTypeTestForm.Pass.errors.min">Pass không thể nhỏ hơn 0</div>
+                        </div>
+
+                        <div *ngIf="passCreatThanMax" style="color: #dc3545; font-size: 80%;">Pass phải nhỏ hơn Max
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-sm btn-student">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        <i *ngIf="!loading" class="far fa-check-circle"></i> Lưu
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm btn-student btn-margin-left-35"
+                        (click)="onReset()">
+                        <i class="fa fa-ban "></i> Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Modal update test type-->
+<div class="modal fade" id="modalContactFormUpdateTest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Cập nhật loại hình kiểm tra đầu vào</h4>
+                <button #closeModalUpdateTypeTest type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form class="modal-body mx-3" #myform="ngForm" [formGroup]="UpdateTypeTestForm" (ngSubmit)="onSubmitUpdateTestSubject(UpdateTestSubjectForm)">
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fa fa-id-badge prefix grey-text"></i>
+                        <input formControlName="Id" type="text" id="Id-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && updateTypeTestForm.Id.errors }" style="width: 85%;" disabled>
+                        <label for="Id-edit" class="active" disabled>ID</label>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <input formControlName="Name" type="text" id="name-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && updateTypeTestForm.Name.errors }" style="width: 85%;">
+                        <label for="name-edit" class="active">Name</label>
+                        <div *ngIf="submitted && updateTypeTestForm.Name.errors" class="invalid-feedback">
+                            <div *ngIf="updateTypeTestForm.Name.errors.required">Name không được để trống!</div>
+                            <div *ngIf="updateTypeTestForm.Name.errors.minlength">Name quá ngắn!</div>
+                            <div *ngIf="updateTypeTestForm.Name.errors.maxlength">Name quá dài!</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-list-ul prefix grey-text"></i>
+                        <input formControlName="Max" type="text" id="Max-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && updateTypeTestForm.Max.errors }" style="width: 85%;">
+                        <label for="Max-edit" class="active">Max</label>
+                        <div *ngIf="submitted && updateTypeTestForm.Max.errors" class="invalid-feedback">
+                            <div *ngIf="updateTypeTestForm.Max.errors.required">Max không được để trống!</div>
+                            <div *ngIf="updateTypeTestForm.Max.errors.minlength">Max quá ngắn!</div>
+                            <div *ngIf="updateTypeTestForm.Max.errors.maxlength">Max quá dài!</div>
+                            <div *ngIf="updateTypeTestForm.Max.errors.min">Max không thể nhỏ hơn 0!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="far fa-check-circle prefix grey-text"></i>
+                        <input formControlName="Pass" type="text" id="Pass-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && updateTypeTestForm.Pass.errors }" style="width: 85%;">
+                        <label for="Pass-edit" class="active">Pass</label>
+                        <div *ngIf="submitted && updateTypeTestForm.Pass.errors" class="invalid-feedback">
+                            <div *ngIf="updateTypeTestForm.Pass.errors.required">Pass không được để trống!</div>
+                            <div *ngIf="updateTypeTestForm.Pass.errors.minlength">Pass quá ngắn!</div>
+                            <div *ngIf="updateTypeTestForm.Pass.errors.maxlength">Pass quá dài!</div>
+                            <div *ngIf="updateTypeTestForm.Pass.errors.min">Pass không thể nhỏ hơn 0!</div>
+                        </div>
+                        <div *ngIf="passUpdateThanMax" style="color: #dc3545; font-size: 80%;">Pass phải nhỏ hơn Max
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-shield-alt prefix grey-text"></i>
+                        <select formControlName="Status" class="md-form mdb-select md-form-custom" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && updateTypeTestForm.Status.errors }">
+                            <option value="0">Ngưng hoạt động</option>
+                            <option value="1">Hoạt động</option>
+                        </select>
+                        <div *ngIf="submitted && updateTypeTestForm.Status.errors" class="invalid-text"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-sm btn-student">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        <i *ngIf="!loading" class="far fa-check-circle"></i> Lưu
+                    </button>
+                    <button type="reset" class="btn btn-danger btn-sm btn-student btn-margin-left-35" (click)="onReset()">
+                        <i class="fa fa-ban "></i> Hủy
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal test detail -->
+<div class="modal fade" id="modalTestDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-w-900" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center" style="margin-bottom: 10px; height: 50px;">
+                <h4 class="modal-title w-100 font-weight-bold">Thông tin bài test</h4>
+                <button #closebuttonUpdate type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+            </div>
+
+            <form action="" [formGroup]="TestDetailForm">
+                <!-- Info-test -->
+                <div class="col-md-12 row slider" style="height: 100%; padding-left: 0px;">
+                    <div class="col-md-9 info-test">
+
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="fas fa-graduation-cap prefix grey-text"></i>
+                              <input formControlName="khoa" type="text" id="khoa" class="form-control">
+                              <label for="khoa" class="active">Khóa:</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="fas fa-edit prefix grey-text"></i>
+                              <input formControlName="title" type="text" id="title" class="form-control">
+                              <label for="title" class="active">Tiêu đề:</label>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="far fa-file-alt prefix grey-text"></i>
+                              <input formControlName="typeTest" type="text" id="typeTest" class="form-control">
+                              <label for="typeTest" class="active">Loại test:</label>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="fas fa-clipboard prefix grey-text"></i>
+                              <input formControlName="description" type="text" id="description" class="form-control">
+                              <label for="description" class="active">Nội dung:</label>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="fas fa-shield-alt prefix grey-text"></i>
+                              <input formControlName="status" type="text" id="status" class="form-control">
+                              <label for="status" class="active">Trạng thái:</label>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <div class="md-form col-12">
+                              <i class="fas fa-calendar-times prefix grey-text"></i>
+                              <input formControlName="timeTest" type="text" id="timeTest" class="form-control">
+                              <label for="timeTest" class="active">Thời gian:</label>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <!-- <div class="col-md-3 upload-files-test">
+                        <div style="width: 100%; height: 100%; border: 1px solid #4caf93; border-radius: 4px;">
+                            <div id="FileUpload">
+                                <div class="wrapper">
+                                    <div class="upload">
+                                        <p>
+                                            <label for="upload-file-input" class="btn-choose-file">
+                                       Chọn file 
+                                    </label>
+                                        </p>
+                                        <input type="file" id="upload-file-input" ng2FileSelect [uploader]="uploader" multiple /><br/>
+                                    </div>
+                                    <div class="uploaded uploaded--one" *ngFor="let item of uploader.queue">
+                                        <i class="far fa-file-pdf"></i>
+                                        <div class="file">
+                                            <div class="file__name">
+                                                <p>{{ item?.file?.name }}</p>
+                                                <i class="fas fa-times" (click)="item.remove()"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+
+                <!-- Table data -->
+                <div class="row table-row" style="margin-bottom: 15px;">
+                    <div class="col-md-12">
+                        <div class="card data-card">
+                            <div class="card-body data-card-body">
+                                <table class="table table-striped table-hover" mdbTable hover="true">
+                                    <thead class=" text-primary">
+                                        <th [class.active]="order === 'STT'" (click)="setOrder('STT')" class="cursor" title="Filter by STT">
+                                            STT<span class="fas" *ngIf="order === 'STT'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th [class.active]="order === 'Name'" (click)="setOrder('Name')" class="cursor" title="Filter by name">
+                                            Tên<span class="fas" *ngIf="order === 'Name'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th class="d-none d-sm-table-cell">N/ngữ</th>
+                                        <th [class.active]="order === 'GPA'" (click)="setOrder('GPA')" class="d-none d-sm-table-cell cursor" title="Filter by GPA">
+                                            GPA<span class="fas" *ngIf="order === 'GPA'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th class="d-none d-xl-table-cell">SĐT</th>
+                                        <th class="d-none d-xl-table-cell">Email</th>
+                                        <th class="d-none d-sm-table-cell">G/chú</th>
+                                        <th class="d-none d-sm-table-cell">Status</th>
+                                        <th *ngFor="let item of listIdTestSubject">{{item}}</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let s of listStudentTest | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+                                            <td class="text-right stt">
+                                                {{i+1}}
+                                            </td>
+                                            <td class="text-left">
+                                                {{s.FullName}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-left">
+                                                {{s.NameLanguages}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-right gpa">
+                                                {{s.GPA}}
+                                            </td>
+                                            <td class="d-none d-xl-table-cell text-center">
+                                                {{s.Phone}}
+                                            </td>
+                                            <td class="d-none d-xl-table-cell text-left">
+                                                {{s.Email}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-left">
+                                                {{s.Details}}
+                                            </td>
+                                            <td class="text-left">
+                                                <div [className]="badgeStatus(s.Status)">{{s.Status}}</div>
+                                            </td>
+                                            <td *ngFor="let idTestSubject of listIdTestSubject, let i = index">
+                                                <span *ngIf="checkExistArray(idTestSubject, s.TestMarkDetail) > -1">
+                                                    {{s.TestMarkDetail[checkExistArray(idTestSubject, s.TestMarkDetail)].Point? s.TestMarkDetail[checkExistArray(idTestSubject, s.TestMarkDetail)].Point : 'NA'}}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                                <div *ngIf="listStudentTest.length === 0" class="no-item text-center col-12">
+                                    <p>Không có sinh viên nào tham gia bài test.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal AddTest -->
+<div class="modal fade" id="modalAddTest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">+
+    <div class="modal-dialog modal-w-750" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center" style="margin-bottom: 10px; height: 50px;">
+                <h4 class="modal-title w-100 font-weight-bold">Thêm bài test</h4>
+                <button #closeModalAddTest type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <form action="" [formGroup]="AddTestForm" (ngSubmit)="onSubmitAddTest()">
+                <!-- Info-test -->
+                <div class="col-md-12 row slider" style="height: 100%; padding-left: 0px;">
+                    <div class="col-md-11 info-test">
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Khóa:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="filterNotId(listSakura, '')" bindLabel="Name" placeholder="Chọn khóa" bindValue="Id" formControlName="khoa" [ngClass]="{ 'is-invalid': submitted && f.khoa.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.khoa.errors" class="invalid-text">
+                                    <div *ngIf="f.khoa.errors.required">Khóa không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Tiêu đề:</label>
+                            <div class="col-md-10 form-group">
+                                <input type="text" class="form-control" value="" formControlName="title" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+                                <div *ngIf="submitted && f.title.errors" class="invalid-feedback">
+                                    <div *ngIf="f.title.errors.required">Tiêu đề không được để trống!</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Loại test:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="ListTestSubject" bindValue="Id" bindLabel="Id" placeholder="Chọn loại test" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true" formControlName="typeTest" [ngClass]="{ 'is-invalid': submitted && f.typeTest.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.typeTest.errors" class="invalid-text">
+                                    <div *ngIf="f.typeTest.errors.required">Loại test không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Nội dung:</label>
+                            <div class="col-md-10 form-group">
+                                <textarea type="file" class="form-control" value="" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }"></textarea>
+                                <div *ngIf="submitted && f.description.errors" class="invalid-feedback">
+                                    <div *ngIf="f.description.errors.required">Nội dung không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Trạng thái:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="listTestStatus" bindValue="value" bindLabel="label" placeholder="Trạng thái" formControlName="status" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && f.status.errors" class="invalid-text">
+                                    <div *ngIf="f.status.errors.required">Ghi chú không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Thời gian:</label>
+                            <div class="col-md-10 form-group">
+                                <input type="datetime-local" class="form-control" value="" formControlName="timeTest" [ngClass]="{ 'is-invalid': submitted && f.timeTest.errors }">
+                                <div *ngIf="submitted && f.timeTest.errors" class="invalid-feedback">
+                                    <div *ngIf="f.timeTest.errors.required">Thời gian không được để trống!</div>
+                                </div>
+                            </div>
+                        </div> -->
+                        
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2"></label>
+                            <div class="col-md-10 form-group">
+                                <div class="upload add-test-upload">
+                                    
+                                    <div ng2FileDrop
+                                        [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
+                                        (fileOver)="fileOverBase($event)"
+                                        [uploader]="uploader"
+                                        class="well my-drop-zone">
+                                    </div>
+                                    <div class="row" style="position: absolute; ">
+                                        <p style="background-color: #fff; font-size: 12px;">Kéo thả hoặc</p>
+                                        <label for="upload-file-input" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg btn-upload">Chọn file(s)... </label>
+                                    </div>
+                                    <input type="file" id="upload-file-input" ng2FileSelect [uploader]="uploader" formControlName="file" multiple/><br/>
+
+                                </div>
+                                <div class="uploaded uploaded--one" *ngFor="let item of uploader.queue">
+                                    <i class="far fa-file-pdf"></i>
+                                    <div class="file">
+                                        <div class="file__name">
+                                            <p>{{ item?.file?.name }}</p>
+                                            <i class="fas fa-times" (click)="item.remove()"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="row col-md-12 search-field">
+                            <pdf-viewer [src]="src" [original-size]="false"></pdf-viewer>
+                        </div> -->
+
+                    </div>
+
+                    <!-- <div class="col-md-3 upload-files-test">
+                        <div style="width: 100%; height: 100%; border: 1px solid #4caf93; border-radius: 4px;">
+                            <div id="FileUpload">
+                                <div class="wrapper">
+                                    <div class="upload">
+                                        <p>
+                                            <label for="upload-file-input" class="btn-choose-file">
+                                       Chọn file 
+                                    </label>
+                                        </p>
+                                        <input type="file" id="upload-file-input" ng2FileSelect [uploader]="uploader" multiple /><br/>
+                                    </div>
+
+                                    <div class="uploaded uploaded--one" *ngFor="let item of uploader.queue">
+                                        <i class="far fa-file-pdf"></i>
+                                        <div class="file">
+                                            <div class="file__name">
+                                                <p>{{ item?.file?.name }}</p>
+                                                <i class="fas fa-times" (click)="item.remove()"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div> -->
+
+                </div>
+
+                <!-- Button action -->
+                <div class="col-md-12 float-right text-right text-sm-center btn-action">
+                    <button type="reset" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg">
+                        <span>Hủy</span>
+                    </button>
+                    <button type="submit" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg btn-add-test">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        <i *ngIf ="!loading" class="far fa-check-circle"></i> Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal update diem sinh vien trong bai test-->
+<div class="modal fade" id="modalUpdateTest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-w-900" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center" style="margin-bottom: 10px; height: 50px;">
+                <h4 class="modal-title w-100 font-weight-bold">Sửa thông tin bài test</h4>
+                <button #closeUpdateTestModal type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+            </div>
+
+            <form action="" [formGroup]="UpdateTestForm" (ngSubmit)="onSubmitUpdateTest()">
+                <!-- Info-test -->
+                <div class="col-md-12 row slider" style="height: 100%; padding-left: 0px;">
+                    <div class="col-md-9 info-test">
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Khóa:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="filterNotId(listSakura, '')" bindValue="Id" bindLabel="Name" placeholder="Chọn khóa" formControlName="khoa" [ngClass]="{ 'is-invalid': submitted && u.khoa.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && u.khoa.errors" class="invalid-text">
+                                    <div *ngIf="u.khoa.errors.required">Khóa không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Tiêu đề:</label>
+                            <div class="col-md-10 form-group">
+                                <input type="text" class="form-control" value="" formControlName="title" [ngClass]="{ 'is-invalid': submitted && u.title.errors }" >
+                                <div *ngIf="submitted && u.title.errors" class="invalid-feedback">
+                                    <div *ngIf="u.title.errors.required">Tiêu đề không được để trống!</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Loại test:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="ListTestSubject" bindValue="Id" bindLabel="Id" placeholder="Chọn loại test" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true" formControlName="typeTest" 
+                                        [ngClass]="{ 'is-invalid': submitted && u.typeTest.errors }" (change)="showInputScore($event)">
+                                </ng-select>
+                                <div *ngIf="submitted && u.typeTest.errors" class="invalid-text">
+                                    <div *ngIf="u.typeTest.errors.required">Loại test không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Nội dung:</label>
+                            <div class="col-md-10 form-group">
+                                <textarea type="file" class="form-control" value="" formControlName="description" [ngClass]="{ 'is-invalid': submitted && u.description.errors }"></textarea>
+                                <div *ngIf="submitted && u.description.errors" class="invalid-feedback">
+                                    <div *ngIf="u.description.errors.required">Nội dung không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Trạng thái:</label>
+                            <div class="col-md-10 form-group">
+                                <ng-select [items]="listTestStatus" bindValue="value" bindLabel="label" placeholder="Trạng thái" formControlName="status" [ngClass]="{ 'is-invalid': submitted && u.status.errors }">
+                                </ng-select>
+                                <div *ngIf="submitted && u.status.errors" class="invalid-text">
+                                    <div *ngIf="u.status.errors.required">Trạng thái không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="row col-md-12 search-field">
+                            <label class="col-md-2">Thời gian:</label>
+                            <div class="col-md-10 form-group">
+                                <input type="datetime-local" class="form-control" value="" formControlName="timeTest" [ngClass]="{ 'is-invalid': submitted && u.timeTest.errors }">
+                                <div *ngIf="submitted && u.timeTest.errors" class="invalid-feedback">
+                                    <div *ngIf="u.timeTest.errors.required">Thời gian không được để trống!</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3 upload-files-test">
+                        <div style="width: 100%; height: 100%; border-radius: 4px;">
+                            <div id="FileUpload">
+                                <div class="wrapper">
+                                    <div class="upload update-upload">
+                                        <label for="upload-file-input" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg btn-upload">Chọn file(s)... </label>
+                                        <input type="file" id="upload-file-input" ng2FileSelect [uploader]="uploader" formControlName="file" multiple /><br/>
+                                    </div>
+                                    <div class="uploaded uploaded--one" *ngFor="let item of uploader.queue">
+                                        <i class="far fa-file-pdf"></i>
+                                        <div class="file">
+                                            <div class="file__name">
+                                                <p>{{ item?.file?.name }}</p>
+                                                <i class="fas fa-times" (click)="item.remove()"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Table data -->
+                <div class="row table-row">
+                    <div class="col-md-12">
+                        <div class="card data-card">
+                            <div class="card-body data-card-body">
+                                <table class="table table-striped table-hover" mdbTable hover="true">
+                                    <thead class=" text-primary">
+                                        <th>
+                                            <span class="custom-control custom-checkbox" style="top: 8px;">
+                                                <input type="checkbox" class="custom-control-input check-all" id="check-all-modal" [ngModelOptions]="{standalone: true}" [(ngModel)]="checkedIdModal" (change)="checkAll(checkedIdModal == false?true:false)" checked>
+                                                <label class="custom-control-label" for="check-all-modal"><span style="font-size: 12px; line-height: 2.2;">Chọn</span></label>
+                                            </span>
+                                        </th>
+                                        <th [class.active]="order === 'STT'" (click)="setOrder('STT')" class="cursor" title="Filter by STT">
+                                            STT<span class="fas" *ngIf="order === 'STT'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th [class.active]="order === 'Name'" (click)="setOrder('Name')" class="cursor" title="Filter by name">
+                                            Tên<span class="fas" *ngIf="order === 'Name'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th class="d-none d-sm-table-cell">N/ngữ</th>
+                                        <th [class.active]="order === 'GPA'" (click)="setOrder('GPA')" class="d-none d-sm-table-cell cursor" title="Filter by GPA">
+                                            GPA<span class="fas" *ngIf="order === 'GPA'" [ngClass]="{'fa-sort-amount-up':!reverse,'fa-sort-amount-down':reverse}"></span>
+                                        </th>
+                                        <th class="d-none d-xl-table-cell">SĐT</th>
+                                        <th class="d-none d-xl-table-cell">Email</th>
+                                        <th class="d-none d-sm-table-cell">G/chú</th>
+                                        <th class="d-none d-sm-table-cell">Status</th>
+                                        <th *ngFor="let item of listIdTestSubject">{{item}}</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let s of listStudentTest | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+                                            <td>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" value="{{s.Id}}" class="custom-control-input check-id" id="check-id-modal-{{i}}" [checked]="checkedIdModal">
+                                                    <label class="custom-control-label" for="check-id-modal-{{i}}"></label>
+                                                </div>
+                                            </td>
+                                            <td class="text-right stt">
+                                                {{i+1}}
+                                            </td>
+                                            <td class="text-left">
+                                                {{s.FullName}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-left">
+                                                {{s.NameLanguages}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-right gpa">
+                                                {{s.GPA}}
+                                            </td>
+                                            <td class="d-none d-xl-table-cell text-center">
+                                                {{s.Phone}}
+                                            </td>
+                                            <td class="d-none d-xl-table-cell text-left">
+                                                {{s.Email}}
+                                            </td>
+                                            <td class="d-none d-sm-table-cell text-left">
+                                                {{s.Details}}
+                                            </td>
+                                            <td class="text-left">
+                                                <div [className]="badgeStatus(s.Status)">{{s.Status}}</div>
+                                            </td>
+                                            <td *ngFor="let idTestSubject of listIdTestSubject, let i = index">
+                                                <span *ngIf="checkExistArray(idTestSubject, s.TestMarkDetail) > -1">
+                                                    {{s.TestMarkDetail[checkExistArray(idTestSubject, s.TestMarkDetail)].Point? s.TestMarkDetail[checkExistArray(idTestSubject, s.TestMarkDetail)].Point : 'NA'}}
+                                                </span>
+                                            </td>
+                                            <td class="d-flex justify-content-between align-items-center action-sv">
+                                                <div class="table-data-feature">
+                                                    <div ngbDropdown>
+                                                        <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                                                            <button type="button" class="item" data-toggle="tooltip" title="Duyệt" [attr.id]="'dropdownScore'+i" ngbDropdownToggle>Nhập điểm</button>
+                                                            <div ngbDropdownMenu [attr.aria-labelledby]="'dropdownScore'+i" style="display: inline; transition: none;">
+                                                                <div class="row" style="margin-top: 5px;" *ngFor="let item of listIdTestSubject">
+
+                                                                    <label for="input-{{item}}-{{i}}" class="col-4" style="padding-top: 7px; padding-left: 30px;">{{item}}</label>
+                                                                    <input type="text" id="input-{{item}}-{{i}}" attr.data-student="{{s.Id}}" attr.data-test="{{item}}" class="col-4 input-score" 
+                                                                            value="{{checkExistArray(item, s.TestMarkDetail) >-1 && s.TestMarkDetail[checkExistArray(item, s.TestMarkDetail)].Point != null? s.TestMarkDetail[checkExistArray(item, s.TestMarkDetail)].Point : 0}}">
+                                                                    <span style="font-size: 12px;">/13</span>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                                <div *ngIf="listStudentTest.length === 0" class="no-item text-center col-12">
+                                    <p>Không có sinh viên nào tham gia bài test.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" formControlName="id">
+                <!-- Button action -->
+                <div class="col-md-12 float-right text-right text-sm-center btn-action">
+                    <button type="reset" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg">
+                        <span>Hủy</span>
+                    </button>
+                    <button type="submit" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg btn-add-test">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        <i *ngIf ="!loading" class="far fa-check-circle"></i> Lưu
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Test Delete Confirm-->
+<div class="modal fade" id="modalContactFormDeleteTest" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Cảnh báo: Bạn chắc chắn muốn xóa!</h5>
+                <button #btnCloseConfirm type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="margin-top: 25px;">
+                <!-- Bạn có chắc chắn muốn xóa thông tin sinh viên "<span style="font-weight: bold;">{{nameStudentDelete || ''}}</span>"? -->
+                <span>lưu ý: Khi khóa sakura chưa bắt đầu. Trạng thái
+                    sinh
+                    viên sẽ được trả về: Test</span>
+                <br>
+                <span> -Sinh viên có thể tham gia bài test tiếp theo.</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-Secondary btn-sm" data-dismiss="modal">Bỏ qua</button>
+                <button type="button" class="btn badge-danger btn-sm" (click)="deleteTest(idTestDelete)">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Xóa
+                </button>
+                <button type="button" class="btn btn-info btn-sm" (click)="deleteTest(idTestDelete)">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Xóa và Cập Nhật
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

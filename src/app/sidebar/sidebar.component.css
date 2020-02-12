@@ -1,0 +1,72 @@
+.menu-icon-toggle{
+    right: -1px;
+    font-size: 24px;
+    top: 5px;
+    cursor: pointer;
+    background-color: #4caf93;
+}
+.logo{
+    padding-left: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 15px;
+    color: #fff;
+}
+.col-10{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.col-2{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+.menu-full-size .col-10{
+    display: none;
+}
+.menu-full-size .col-2{
+    max-width: 100%;
+}
+.opacity-btn{
+    animation: opa;
+    animation-duration: 0.3s;
+}
+
+@keyframes opa {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+li{
+    height: 55px;
+    padding-top: 3px;
+}
+li:hover{
+    background-color: #f0f0f0;
+}
+li:hover a{
+    color: #4caf93;
+}
+li[class=active]:hover a{
+    color: #4caf93 !important;
+}
+.nav{
+    padding-top: 50px;
+
+}
+.menu-full-size .active{
+    background-color: #f0f0f0;
+    color: #4caf93 !important;
+}
+.menu-full-size .active i{
+    color: #4caf93 !important;
+}
+.menu-full-size .active{
+    background-color: #f0f0f0;
+    color: #4caf93 !important;
+}
+.android{
+    right: 14px;
+    bottom: 60px;
+    filter: invert(100%);
+    fill: gray;
+    width: 30px;
+}

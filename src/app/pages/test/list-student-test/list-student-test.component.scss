@@ -1,0 +1,204 @@
+h5 {
+    font-size: 1.50em !important;
+}
+
+.btnHuy {
+    background-color: #ed8077 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    width: 50px;
+}
+
+.IQ-EQ-Select {
+    padding-top: 10px;
+}
+
+.Exam-Select {
+    padding-top: 10px;
+}
+
+.btnLoc {
+    margin-top: 37px;
+}
+
+.margin-checkbox {
+    margin-left: 13px;
+}
+
+.btn-add-test {
+    background-color: #0a986f;
+    color: #fff;
+}
+
+.btn-add-test:hover {
+    opacity: 0.8;
+}
+
+.btn-backlog-round {
+    height: 30px;
+}
+
+.au-btn--small {
+    font-size: 12px;
+}
+
+.btn-action {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#modalAddTest .slider .info-test {
+    padding-right: 0px;
+}
+
+#modalAddTest .slider .info-test .col-md-12 {
+    padding-right: 0px;
+}
+
+.upload-files-test {
+    padding-left: 0px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+}
+
+.btn-choose-file {
+    cursor: pointer;
+}
+
+#upload-file-input {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+    margin-bottom: 0px;
+}
+
+#FileUpload {
+    display: flex;
+    justify-content: center;
+}
+
+.wrapper {
+    /* margin: 30px;
+    padding: 10px;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22); */
+    border-radius: 10px;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* === Upload Box === */
+
+.upload {
+    margin: 10px;
+    height: 85px;
+    border: 5px dashed #e6f5e9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.upload p {
+    /* margin-top: 12px; */
+    line-height: 1;
+    font-size: 14px;
+    color: #0c3214;
+    letter-spacing: 1.5px;
+    margin-bottom: 0px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #e6f5e9;
+    cursor: pointer;
+}
+
+.upload p label {
+    margin-bottom: 0px;
+}
+
+.upload__button {
+    background-color: #e6f5e9;
+    border-radius: 10px;
+    padding: 0px 8px 0px 10px;
+}
+
+.upload__button:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+
+/* === Uploaded Files === */
+
+.uploaded {
+    width: 100%;
+    margin: 5px 0px;
+    background-color: #e6f5e9;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.file {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+}
+
+.file__name {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    line-height: 1;
+    color: #0c3214;
+    font-size: 12px;
+    /* letter-spacing: 1.5px; */
+    position: relative;
+}
+
+.file__name p {
+    width: 90%;
+    overflow: hidden;
+    margin: 5px 0px;
+}
+
+.file__name i {
+    position: absolute;
+    right: 3px;
+    top: 5px;
+}
+
+.fa-times:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.fa-file-pdf {
+    padding: 6px;
+    font-size: 20px;
+    color: #0c3214;
+    width: 13%;
+}
+
+.table-data-feature .item {
+    border-radius: 4px;
+    width: 100px;
+}
+
+#modalAddTest .form-group {
+    margin-bottom: 8px !important;
+}
+
+.checkbox-css {
+    margin-bottom: -10px;
+}
+
+.statuscss {
+    width: 6%;
+}

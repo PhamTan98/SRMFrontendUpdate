@@ -1,0 +1,318 @@
+<!-- Search -->
+<div class="col-md-12 card-action">
+    <div class="row query col-md-12">
+        <div class="col-md-8 col-sm-9 col-9 row">
+            <button class="au-btn btn-backlog position-relative" (click)="toggleSearch()">
+                <i class="fas fa-chevron-down position-absolute" *ngIf="!isOpen"></i>
+                <i class="fas fa-chevron-up position-absolute" *ngIf="isOpen"></i>
+                <span>Tìm kiếm</span> 
+              </button>
+        </div>
+        <div class="col-md-4 col-sm-3 col-3" style="margin-right: 0px;padding-right: 0px;margin-left: 15px;">
+            <div class="row float-right">
+                <!-- <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: 15px;" data-toggle="modal" data-target="#modalAddTest">
+          <i class="fas fa-plus"></i> <span class="d-none d-sm-inline"> Thêm</span>
+        </button> -->
+                <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: -16px;" (click)="customToastrSuccess()">
+          <i class="fas fa-download"></i> <span class="d-none d-sm-inline"> Excel</span>
+        </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 condition-div" [@openClose]="isOpen ? 'open': 'closed'">
+        <div class="table-row basic-search">
+            <div class="col-md-12 row">
+                <div class="col-md-3">
+                    <label for="searchInput">Từ khóa:</label>
+                    <form>
+                        <div class="ng-select" style="position: relative;">
+                            <input type="text" name="search" id="searchInputBasic" class="form-control input-search" placeholder="Từ khóa..." [(ngModel)]="filter" (keyup)="showBtnDelete($event)">
+                            <i class="fas fa-search icon-search" style="color: #999;"></i>
+                            <i class="fas fa-times icon-delete-search grey-text cursor" (click)="deleteSearch($event)" *ngIf="showBtnDelBasic"></i>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <label for="languageSelect">Ngôn ngữ:</label>
+                    <ng-select [items]="listLanguage" bindValue="Id" bindLabel="Name" placeholder="Ngôn ngữ" labelForId="listLanguage" [(ngModel)]="myFilter.IdLanguages">
+                    </ng-select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="exampleFormControlSelect2">Kết quả test:</label>
+                    <select class="form-control" id="exampleFormControlSelect2">
+                        <option value="0">Tất cả</option>
+                        <option value="2.499"> Pass </option>
+                        <option value="2.5"> Fail </option>
+                        <option value="3"> Waiting </option>
+                        <option value="3.5"> None </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="SakuraSelect">Mùa Sakura:</label>
+                    <ng-select [items]="listSakura" (change)="GetListStudentBySakura()" bindValue="Id" bindLabel="Name" placeholder="Mùa sakura" labelForId="SakuraSelect" [(ngModel)]="idSakura">
+                    </ng-select>
+                </div>
+                <div class="col-md-2">
+                    <label for="statusSelect">Trạng thái:</label>
+                    <ng-select [items]="listStatus" bindValue="value" placeholder="Trạng thái" labelForId="statusSelect" [(ngModel)]="myFilter.Status">
+                    </ng-select>
+                </div>
+            </div>
+            <div class="row col-md-12 condition-div">
+                <div class="col-md-3 IQ-EQ-Select">
+                    <label for="IQ-EQ-Select">Sắp xếp phân loại kết quả:</label>
+                    <ng-select [items]="TestSubject" bindValue="Id" bindLabel="Name" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true" placeholder="Sắp xếp phân loại kết quả:" labelForId="IQ-EQ-Select" [(ngModel)]="myFilter">
+                    </ng-select>
+                </div>
+                <div class="col-md-3 Exam-Select">
+                    <label for="Exam-Select">Bài test đầu vào:</label>
+                    <ng-select [items]="listTest" bindValue="Id" bindLabel="Name" placeholder="Chọn bài test" labelForId="Exam-Select" (change)="getIdBaiTest($event)">
+                    </ng-select>
+                </div>
+                <div class="col-md-6 text-right btnLoc">
+                    <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" style="margin-right: 15px;" data-toggle="modal" (click)="addSinhVienToTest()">
+                        <i class="fas position-absolute"></i> <span>Thêm sinh viên test</span>
+                      </button>
+                    <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" data-toggle="modal" data-target="#modalConfirmclassify" (click)="phanLoaiKetQua()">
+                        <i class="fas position-absolute"></i> <span> Phân loại kết quả</span>
+                      </button>
+                    <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg">
+                        <i class="fas position-absolute" ></i>
+                        <span>Lọc</span> 
+                      </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-10 row text-left">
+        <div style="padding-left: 45px;">
+            <span>{{(StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+        {{itemsPerPage*p <= (StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length? itemsPerPage*p : (StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length}} of {{(StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length}}
+      </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p=$event" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+    <div class="col-2 text-right" style="padding-right: 0px;">
+        <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+      <i class="fas fa-cog"></i> <span class="d-none d-sm-inline"> View</span>
+    </button>
+        <!-- <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalConfirm" (click)="getInfoStudentDelete()">
+      <i class="fas fa-cog"></i> <span class="d-none d-sm-inline"> Phân loại kết quả</span>
+    </button> -->
+    </div>
+</div>
+
+<!-- Table data -->
+<div class="row table-row">
+    <div class="col-md-12">
+        <div class="card data-card">
+            <div class="card-body data-card-body">
+                <table mat-table class="table table-striped table-hover" mdbTable hover="true">
+                    <thead class=" text-primary">
+                        <th>
+                            <div class="custom-control custom-checkbox checkbox-css">
+                                <input type="checkbox" class="custom-control-input check-all" id="check-all" [ngModelOptions]="{standalone: true}" [(ngModel)]="checkedId" (change)="checkAll(checkedId == false?true:false)">
+                                <label class="custom-control-label" for="check-all"><span style="font-size: 12px; line-height: 2.2;">Chọn</span></label>
+                            </div>
+                        </th>
+                        <th [class.active]="order==='STT'" (click)="setOrder( 'STT')" class="cursor" title="Filter by STT" *ngIf="stt">STT
+                            <span class="fas" *ngIf="order==='STT'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
+                        </th>
+                        <th [class.active]="order==='Name'" (click)="setOrder( 'Name')" class="cursor" title="Filter by name" *ngIf="ten">Tên
+                            <span class="fas" *ngIf="order==='Name'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
+                        </th>
+                        <th *ngIf="gender" class="d-none d-md-table-cell">G/Tính</th>
+                        <th class="d-none d-md-table-cell" *ngIf="truong">Trường</th>
+                        <th [class.active]="order==='Year'" (click)="setOrder( 'Year')" class="d-none d-md-table-cell" title="Filter by year" *ngIf="nam">Năm
+                            <span class="fas" *ngIf="order==='Year'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
+                        </th>
+                        <th class="d-none d-sm-table-cell" *ngIf="ngonngu">N/ngữ</th>
+                        <th class="d-none d-xl-table-cell" *ngFor="let item of TestSubject">{{item.Id}}</th>
+                        <th class="d-none d-sm-table-cell">KQ Test</th>
+                        <th class="text-center" *ngIf="trangthai">T/Thái</th>
+                        <th *ngIf="action" style="text-align: center;">Hành động</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of StudentTest | orderBy: order:reverse: 'case-insensitive' | filter:filter | filterBy: myFilter | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i= index">
+                            <td style="margin-left: 13px;">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input input-choose-student" attr.data-id="{{s.Id}}" attr.data-fullname="{{s.FullName}}" id="check-id-{{i}}" [checked]="checkedId">
+                                    <label class="custom-control-label" for="check-id-{{i}}"></label>
+                                </div>
+                            </td>
+                            <td class="text-left stt" *ngIf="stt">
+                                {{i+1}}
+                            </td>
+                            <td class="text-left" *ngIf="ten">
+                                {{s.FullName}}
+                            </td>
+                            <td class="d-none d-md-table-cell" *ngIf="gender">
+                                {{s.Sex == 1? 'Nam':'Nữ'}}
+                            </td>
+                            <td class="d-none d-md-table-cell text-left" *ngIf="truong">
+                                {{s.NameSchool}}
+                            </td>
+                            <td class="d-none d-md-table-cell" *ngIf="nam">
+                                {{s.Year}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left" *ngIf="ngonngu">
+                                {{s.NameLanguages}}
+                            </td>
+
+                            <td class="d-none d-xl-table-cell" *ngFor="let item of TestSubject, let i=index">
+                                <span *ngIf="s.TestMarkDetail != null && checkExistArray(item.Id,s.TestMarkDetail) > -1">
+                                    {{s.TestMarkDetail[checkExistArray(item.Id,s.TestMarkDetail)].Point}}
+                                </span>
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left">
+                                Test
+                            </td>
+                            <td class="statuscss" *ngIf="trangthai">
+                                <div [className]="LabelForStatus(s.Status).classStatus">{{LabelForStatus(s.Status).label}}</div>
+                                <!-- {{LabelForStatus(s.Status)}} -->
+                            </td>
+                            <td class="d-flex justify-content-between align-items-center action-sv text-left" *ngIf="action">
+
+                                <div class="table-data-feature">
+                                    <button class="btnHuy" data-toggle="modal" data-target="#modalConfirm" (click)="getInfoStudentDelete(s.FullName,s.Id)">
+                                        Hủy
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+                <div *ngIf="(StudentTest | orderBy: order:reverse: 'case-insensitive' | filter:filter | filterBy: filterByField | filterBy: myFilter).length===0" class="no-item text-center col-12">
+                    <p>No matching elements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-10 row text-left">
+        <div style="padding-left: 45px;">
+            <span>{{(StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+        {{itemsPerPage*p <= (StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length? itemsPerPage*p : (StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length}} of {{(StudentTest | filter:filter | filterBy: filterByField | filterBy: myFilter).length}}
+      </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p=$event" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+    <div class="col-2 text-right" style="padding-right: 0px;">
+        <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+      <i class="fas fa-cog"></i> <span class="d-none d-sm-inline"> View</span>
+    </button>
+    </div>
+
+</div>
+
+<!-- Modal view option -->
+<div class="modal fade" id="modalViewOption" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">View option</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body mx-3" style="margin-top: 15px;">
+                <div>
+                    <p>Số bản ghi trên một trang:</p>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline1" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(10)" [checked]="itemsPerPage == 10">
+                        <label class="custom-control-label" for="customRadioInline1">10</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline2" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(20)" [checked]="itemsPerPage == 20">
+                        <label class="custom-control-label" for="customRadioInline2">20</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline3" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(50)" [checked]="itemsPerPage == 50">
+                        <label class="custom-control-label" for="customRadioInline3">50</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline4" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(100)" [checked]="itemsPerPage == 100">
+                        <label class="custom-control-label" for="customRadioInline4">100</label>
+                    </div>
+                </div>
+                <div class="select-view">
+                    <p>Hiển thị bảng:</p>
+                    <div class="custom-control custom-checkbox custom-control-inline col-md-6" *ngFor="let item of listColumnStudentTable">
+                        <input type="checkbox" class="custom-control-input" id="id-{{item.value}}" (click)="toggleByCheckBox($event)" [checked]="viewOption[item.value] == true">
+                        <label class="custom-control-label" for="id-{{item.value}}">{{item.label}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal classify -->
+<div class="modal fade" id="modalConfirmclassify" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Cảnh báo: Bạn muốn phân loại kết quả!!!</h5>
+                <button #btnCloseConfirm type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body" style="margin-top: 25px;">
+                <!-- Bạn có chắc chắn muốn xóa thông tin sinh viên"<span style="font-weight: bold;">{{nameStudentDelete || ''}}</span>"? -->
+                <span>-Có 4 sinh viên Pass</span>
+                <br>
+                <span>-Có 6 sinh viên không đủ điều kiện</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">Bỏ qua</button>
+                <button type="button" class="btn btn-success btn-sm" (click)="deleteSinhVien(idStudentDelete)">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Tiếp tục
+        </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal confirm -->
+<div class="modal fade" id="modalConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Hủy</h5>
+                <button #btnCloseConfirm type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body" style="margin-top: 25px;">
+                Bạn có chắc chắn muốn hủy thông tin sinh viên"<span style="font-weight: bold;">{{nameStudentDelete || ''}}</span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">Bỏ qua</button>
+                <button type="button" class="btn btn-success btn-sm" (click)="deleteSinhVien(idStudentDelete)">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Hủy
+        </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+
+<div class="sidebar-wrapper position-relative" id="sidebar-wrapper">
+  <div class="logo col-md-12 float-right">
+      <div class="col-2 none-medium float-right">
+        <i class="nc-icon nc-minimal-left position-absolute icon-hide menu-icon-toggle" id="icon-hide" (click)="sidebarToggle()" (mouseout)="hideIndex='99';showIndex='100'" [style.z-index]="hideIndex"></i>
+        <i class="nc-icon nc-align-left-2 position-absolute  menu-icon-toggle icon-hover" id="icon-hover" (mouseover)="hideIndex='100';showIndex='99'" [style.z-index]="showIndex"></i>
+        <i class="nc-icon nc-minimal-right position-absolute icon-show menu-icon-toggle d-none" id="icon-show" (click)="sidebarToggle()"></i>
+      </div>
+  </div>
+  <ul class="nav">
+      <li *ngFor="let menuItem of menuItems" routerLinkActive="active" class="{{menuItem.class}}">
+          <a [routerLink]="[menuItem.path]">
+            <div>
+              <i class="nc-icon {{menuItem.icon}}"></i>
+              <span class="menu-title">{{menuItem.title}}</span>
+            </div>
+          </a>
+      </li>
+  </ul>
+  <a href="#" class="link-android ">
+    <img class="position-absolute android" src="https://assets.backlog.com/playassets/1.6.14/images/icon/android_logo.svg"> 
+  </a>
+</div>

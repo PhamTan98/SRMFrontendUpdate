@@ -1,0 +1,883 @@
+<!-- Search -->
+<div class="col-md-12 card-action">
+    <div class="row query col-md-12">
+        <div class="col-md-8 col-sm-9 col-9 row">
+            <div class="position-relative con-key" (click)="toggleSearch()">
+                <i class="fas fa-chevron-down position-absolute" *ngIf="!isOpen"></i>
+                <i class="fas fa-chevron-up position-absolute" *ngIf="isOpen"></i>
+                <span>Điều kiện tìm kiếm</span>
+            </div>
+            <button type="button" [className]="(advancedSearch==true)?'au-btn au-btn-icon btn-backlog au-btn--small position-relative btn-non-active':'au-btn au-btn-icon btn-backlog au-btn--small position-relative'" style="min-width: 50px; margin-right: 0px; border-radius: 6px 0px 0px 6px;"
+                (click)="basicSearch=true; advancedSearch=false">
+        <span>Tìm kiếm</span>
+      </button>
+            <button type="button" [className]="(basicSearch==true)?'au-btn au-btn-icon btn-backlog au-btn--small position-relative btn-non-active':'au-btn au-btn-icon btn-backlog au-btn--small position-relative'" style="min-width: 50px;border-radius: 0px 6px 6px 0px;"
+                (click)="basicSearch=false; advancedSearch=true">
+        <span>Nâng cao</span>
+      </button>
+        </div>
+
+        <div class="col-md-4 col-sm-3 col-3" style="margin-right: 0px;padding-right: 0px;margin-left: 15px;">
+            <div class="row float-right">
+                <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: 15px;" data-toggle="modal" data-target="#modalContactForm">
+          <i class="fas fa-plus"></i> <span class="d-none d-sm-inline"> Thêm</span>
+        </button>
+                <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" (click)="customToastrSuccess()">
+          <i class="fas fa-download"></i> <span class="d-none d-sm-inline"> Excel</span>
+        </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 condition-div" [@openClose]="isOpen ? 'open': 'closed'">
+        <div class="row table-row basic-search" *ngIf="basicSearch">
+            <div class="col-md-3">
+                <label for="searchInput">Từ khóa:</label>
+                <form>
+                    <div class="ng-select" style="position: relative;">
+                        <input type="text" name="search" id="searchInputBasic" class="form-control input-search" placeholder="Từ khóa..." [(ngModel)]="filter" (keyup)="showBtnDelete($event)">
+                        <i class="fas fa-search icon-search" style="color: #999;"></i>
+                        <i class="fas fa-times icon-delete-search grey-text cursor" (click)="deleteSearch($event)" *ngIf="showBtnDelBasic"></i>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-3">
+                <label for="schoolSelect">Trường:</label>
+                <ng-select [items]="listSchool" bindValue="Id" bindLabel="FullName" placeholder="Chọn trường" labelForId="schoolSelect" [(ngModel)]="myFilter.IdSchool">
+                </ng-select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="selectGpa">GPA:</label>
+                <ng-select [items]="listGPA" bindValue="value" bindLabel="label" labelForId="selectGpa" (change)="filterGPA($event)">
+                </ng-select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="yearSelect">Năm thứ:</label>
+                <ng-select [items]="listYear" bindValue="value" labelForId="yearSelect" [(ngModel)]="myFilter.Year">
+                </ng-select>
+            </div>
+            <div class="col-md-2">
+                <label for="statusSelect">Trạng thái:</label>
+                <ng-select [items]="listStatus" bindValue="value" labelForId="statusSelect" [(ngModel)]="myFilter.Status">
+                </ng-select>
+            </div>
+
+        </div>
+
+        <div class="col-md-12 advanced-search" *ngIf="advancedSearch">
+            <div class="slider row" style="height: 100%;">
+                <div class="row col-md-12" style="padding-right: 0px;">
+
+                    <div class="col-md-2 col-sm-6 search-field">
+                        <label>Năm thứ:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of filterNotValue(listYear, ''), let i = index">
+                                <input type="checkbox" class="custom-control-input" id="year-{{item.value}}" value="{{item.value}}" (click)="applyMultipleFilter(item.value, myFilter.Year.$or)">
+                                <label class="custom-control-label" for="year-{{item.value}}">{{item.label}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 search-field">
+                        <label>Giới tính:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of filterNotValue(listGender, '')">
+                                <input type="checkbox" class="custom-control-input" id="gender-{{item.value}}" value="{{item.value}}" (click)="applyMultipleFilter(item.value, myFilter.Sex.$or)">
+                                <label class="custom-control-label" for="gender-{{item.value}}">{{item.label}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 search-field">
+                        <label>Ngôn ngữ:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of listLanguage">
+                                <input type="checkbox" class="custom-control-input" id="gpa-{{item.Id}}" value="{{item.Id}}" (click)="applyMultipleFilter(item.Id, myFilter.IdLanguages.$or)">
+                                <label class="custom-control-label" for="gpa-{{item.Id}}">{{item.Name}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 search-field">
+                        <label>Trạng thái:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of filterNotValue(listStatus, '')">
+                                <input type="checkbox" class="custom-control-input" id="status-{{item.value}}" value="{{item.value}}" (click)="applyMultipleFilter(item.value, myFilter.Status.$or)">
+                                <label class="custom-control-label" for="status-{{item.value}}">{{item.label}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-12 search-field">
+                        <label>Trường học:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of filterNotId(listSchool, '')">
+                                <input type="checkbox" class="custom-control-input" id="school-{{item.Id}}" value="{{item.Id}}" (click)="applyMultipleFilter(item.Id, myFilter.IdSchool.$or)">
+                                <label class="custom-control-label" for="school-{{item.Id}}">{{item.FullName}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row col-md-12" style="padding-right: 0px;">
+                    <div class="col-md-2 search-field">
+                        <label>Tiếng Nhật:</label>
+                        <div class="form-group ad-search school-ad-search">
+                            <div class="custom-control custom-checkbox filter-checkbox" *ngFor="let item of listCertificate">
+                                <input type="checkbox" class="custom-control-input" id="certificate-{{item.value}}" value="{{item.value}}">
+                                <label class="custom-control-label" for="certificate-{{item.value}}">{{item.label}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 search-field">
+                        <label>GPA:</label>
+                        <div class="form-group" style="background-color: #f0f0f0;">
+                            <div class="row" style="margin-bottom: 7px;">
+                                <div class="col-md-3">Từ:</div>
+                                <div class="col-md-9">
+                                    <input type="number" max="4" min="0" class="input-group gpa-input" [(ngModel)]="valueMin">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">Đến:</div>
+                                <div class="col-md-9">
+                                    <input type="number" max="4" min="0" class="input-group gpa-input" [(ngModel)]="valueMax">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 search-field">
+                        <label>	&nbsp;</label>
+                        <div class="row" style="margin-bottom: 17px;">
+                            <div class="col-md-4" style="padding-right: 0px;">Tìm theo:</div>
+                            <div class="col-md-8" style="padding-left: 0px;">
+                                <ng-select [items]="listField" bindValue="value" [(ngModel)]="selectField" (change)="filterByFields()">
+                                </ng-select>
+                            </div>
+                        </div>
+                        <div class="row select-listSakura">
+                            <div class="col-md-4" style="padding-right: 0px;">Khóa:</div>
+                            <div class="col-md-8" style="padding-left: 0px;">
+                                <ng-select class="listSakura" [items]="listSakura" bindValue="Id" bindLabel="Name" placeholder="Chọn khóa">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 search-field">
+                        <label for="searchInput">Từ khóa:</label>
+                        <form>
+                            <div class="input-group" style="position: relative;">
+                                <input type="text" name="search" id="searchInputAdvanced" class="form-control input-search input-advanced" placeholder="Từ khóa..." [(ngModel)]="filterCUSTOM" (keyup)="inputCUSTOM($event)">
+                                <i class="nc-icon nc-zoom-split icon-search"></i>
+                                <i class="fas fa-times icon-delete-search grey-text cursor btn-advanced" (click)="deleteSearch($event)" *ngIf="showBtnDelAdvanced"></i>
+                            </div>
+                        </form>
+
+                        <div class="col-md-12 float-right text-right text-sm-center" style="width: 100%;margin-top: 10px;">
+                            <button type="button" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" (click)="phanLoaiTuyenThang()">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span><span>Phân loại tuyển thẳng</span>
+              </button>
+                            <button type="button" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" (click)="reloadComponent()">
+                <span>Xóa tất cả điều kiện</span>
+              </button>
+                            <button type="button" class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg">
+                <span>Tìm kiếm</span>
+              </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-10 row text-left">
+        <div style="padding-left: 45px;">
+            <span>{{(filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length == 0 ? 0 : (itemsPerPage*(p-1) + 1)}} -
+        {{itemsPerPage*p <= (filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length? itemsPerPage*p : (filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length}} of {{(filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length}}
+      </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p = $event" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+    <div class="col-2 text-right" style="padding-right: 0px;">
+        <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+      <i class="fas fa-cog"></i> <span class="d-none d-sm-inline"> View</span>
+    </button>
+    </div>
+
+</div>
+
+<!-- Table data -->
+<div class="row table-row">
+    <div class="col-md-12">
+        <div class="card data-card">
+            <div class="card-body data-card-body">
+                <table class="table table-striped table-hover" mdbTable hover="true">
+                    <thead class=" text-primary">
+
+                        <th [class.active]="order === 'STT'" (click)="setOrder('STT')" class="cursor" title="Filter by STT" *ngIf="viewOption.STT">
+                            STT <span class="fas fa-sort" *ngIf="order != 'STT'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'STT'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th>Id</th>
+                        <th [class.active]="order === 'Name'" (click)="setOrder('Name')" class="cursor" title="Filter by name" *ngIf="viewOption.FullName">
+                            Tên <span class="fas fa-sort" *ngIf="order != 'Name'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'Name'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th *ngIf="viewOption.CV">CV</th>
+                        <th *ngIf="viewOption.Sex" class="d-none d-md-table-cell">G/Tính</th>
+                        <th class="d-none d-md-table-cell" *ngIf="viewOption.Truong">Trường</th>
+                        <th [class.active]="order === 'Year'" (click)="setOrder('Year')" class="d-none d-md-table-cell cursor" title="Filter by year" *ngIf="viewOption.Year">
+                            Năm <span class="fas fa-sort" *ngIf="order != 'Year'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'Year'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th class="d-none d-sm-table-cell" *ngIf="viewOption.NgonNgu">N/ngữ</th>
+                        <th [class.active]="order === 'GPA'" (click)="setOrder('GPA')" class="d-none d-sm-table-cell cursor" title="Filter by GPA" *ngIf="viewOption.GPA">
+                            GPA <span class="fas fa-sort" *ngIf="order != 'GPA'" style="opacity: 0.4;"></span>
+                            <span class="fas" *ngIf="order === 'GPA'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+                        </th>
+                        <th class="d-none d-xl-table-cell" *ngIf="viewOption.Phone">SĐT</th>
+                        <th class="d-none d-xl-table-cell" *ngIf="viewOption.Email">Email</th>
+                        <th class="d-none d-sm-table-cell" *ngIf="viewOption.GhiChu">G/chú</th>
+                        <th *ngIf="viewOption.Status">Status</th>
+                        <th *ngIf="viewOption.Action">Actions</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let s of filterCustom() | orderBy: order:reverse:'case-insensitive' | filter:filter | filterBy: filterByField | filterBy: myFilter | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+                            <td class="text-right stt" *ngIf="viewOption.STT">
+                                {{i+1}}
+                            </td>
+                            <td class="text-center id-phanloai" attr.data-id="{{s.Id}}">
+                                {{s.Id}}
+                            </td>
+                            <td class="text-left" *ngIf="viewOption.FullName">
+                                {{s.FullName}}
+                            </td>
+                            <td class="text-center" *ngIf="viewOption.CV">
+                                <a href="{{s.CV}}">Click</a>
+                            </td>
+                            <td class="text-center d-none d-md-table-cell" *ngIf="viewOption.Sex">
+                                {{s.Sex == 1? 'Nam':'Nữ'}}
+                            </td>
+                            <td class="d-none d-md-table-cell text-left" *ngIf="viewOption.Truong">
+                                {{s.NameSchool}}
+                            </td>
+                            <td class="d-none d-md-table-cell text-center" *ngIf="viewOption.Year">
+                                {{s.Year}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left" *ngIf="viewOption.NgonNgu">
+                                {{s.NameLanguages}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-right gpa" *ngIf="viewOption.GPA">
+                                {{s.GPA}}
+                            </td>
+                            <td class="d-none d-xl-table-cell text-center" *ngIf="viewOption.Phone">
+                                {{s.Phone}}
+                            </td>
+                            <td class="d-none d-xl-table-cell text-left" *ngIf="viewOption.Email">
+                                {{s.Email}}
+                            </td>
+                            <td class="d-none d-sm-table-cell text-left" *ngIf="viewOption.GhiChu">
+                                {{s.Details}}
+                            </td>
+                            <td class="text-left" *ngIf="viewOption.Status">
+                                <div [className]="badgeStatus(s.Status).classStatus">{{badgeStatus(s.Status).label}}</div>
+                            </td>
+                            <td class="d-flex justify-content-between align-items-center action-sv" *ngIf="viewOption.Action">
+                                <div class="table-data-feature">
+                                    <button class="item" data-toggle="modal" data-placement="top" title="Xem thông tin" data-target="#modalContactFormDetail" (click)="showDetailStudent(s.Id)">
+                    <i class="fas fa-info"></i>
+                  </button>
+                                    <button class="item" data-toggle="modal" data-placement="top" title="Sửa" data-target="#modalContactFormEdit" (click)="showEdit(s.Id)">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                                    <button class="item" data-toggle="modal" data-placement="top" title="Xóa" data-target="#modalConfirm" (click)="getInfoStudentDelete(s.FullName, s.Id)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+
+                                    <div ngbDropdown>
+                                        <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                                            <button class="item" data-toggle="tooltip" title="Duyệt" [attr.id]="'dropdownBasic'+i" ngbDropdownToggle></button>
+                                            <div ngbDropdownMenu [attr.aria-labelledby]="'dropdownBasic'+i" style="display: inline; transition: none;">
+                                                <button ngbDropdownItem *ngFor="let status of filterNotValue(listStatus, '')" (click)="updateStatusSinhVien(s.Id, s.FullName, status.value)">{{status.label}}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                </table>
+                <div *ngIf="(filterCustom() | orderBy: order:reverse:'case-insensitive' | filter:filter | filterBy: filterByField | filterBy: myFilter).length === 0" class="no-item text-center col-12">
+                    <p>Không tìm thấy sinh viên nào.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-10 row text-left">
+        <div style="padding-left: 45px;">
+            <span>{{(filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+        {{itemsPerPage*p <= (filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length? itemsPerPage*p : (filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length}} of {{(filterCustom() | filter:filter | filterBy: filterByField | filterBy: myFilter).length}}
+      </span>
+        </div>
+        <div style="padding-left: 15px;">
+            <pagination-controls (pageChange)="p = $event" class="pagination-control" previousLabel="Prev">
+            </pagination-controls>
+        </div>
+    </div>
+
+    <div class="col-2 text-right" style="padding-right: 0px;">
+        <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+      <i class="fas fa-cog"></i> <span class="d-none d-sm-inline"> View</span>
+    </button>
+    </div>
+
+</div>
+
+<!-- Modal them moi sv -->
+<div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Thêm mới sinh viên</h4>
+                <button #closebutton type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+
+            <form class="modal-body mx-3" [formGroup]="AddForm" (ngSubmit)="onSubmitAddStudent()">
+                <div class="row">
+
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <input formControlName="name" type="text" id="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
+                        <label for="name">Họ tên</label>
+                        <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                            <div *ngIf="f.name.errors.required">Tên không được để trống!</div>
+                            <div *ngIf="f.name.errors.minlength">Tên quá ngắn!</div>
+                            <div *ngIf="f.name.errors.maxlength">Tên quá dài!</div>
+                            <div *ngIf="f.name.errors.pattern">Tên không hợp lệ!</div>
+                        </div>
+                    </div>
+
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-genderless prefix grey-text"></i>
+                        <select formControlName="sex" class="md-form mdb-select md-form-custom" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.sex.errors }">
+              <option value="" selected disabled hidden>Giới tính</option>
+              <option value="1">Nam</option>
+              <option value="0">Nữ</option>
+            </select>
+                        <div *ngIf="submitted && f.sex.errors">
+                            <div *ngIf="f.sex.errors.required" class="st_ch">Giới tính không được để trống</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-map-marker-alt prefix grey-text"></i>
+                        <input formControlName="address" type="text" id="address" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.address.errors }">
+                        <label for="address">Địa chỉ</label>
+                        <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
+                            <div *ngIf="f.address.errors.required">Địa chỉ không được để trống!</div>
+                            <div *ngIf="f.address.errors.minlength">Địa chỉ quá ngắn!</div>
+                            <div *ngIf="f.address.errors.maxlength">Địa chỉ quá dài!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-address-card prefix grey-text"></i>
+                        <input formControlName="linkcv" type="text" id="linkcv" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.linkcv.errors }">
+                        <label for="linkcv">Link CV</label>
+                        <div *ngIf="submitted && f.linkcv.errors" class="invalid-feedback">
+                            <div *ngIf="f.linkcv.errors.required">Link CV không được để trống!</div>
+                            <div *ngIf="f.linkcv.errors.pattern">Link CV không hợp lệ!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <input formControlName="email" type="email" id="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }">
+                        <label for="email">Email</label>
+                        <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                            <div *ngIf="f.email.errors.required">Email không được để trống!</div>
+                            <!-- <div *ngIf="f.email.errors.email">Email không hợp lệ</div> -->
+                            <div *ngIf="f.email.errors.pattern">Email không hợp lệ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-clipboard prefix grey-text"></i>
+                        <input formControlName="note" type="text" id="note" class="form-control " [ngClass]="{ 'is-invalid': submitted && f.note.errors }">
+                        <label for="note">Ghi chú</label>
+                        <div *ngIf="submitted && f.note.errors" class="invalid-feedback">
+                            <!-- <div *ngIf="f.note.errors.required">Ghi chú không được để trống!</div> -->
+                            <div *ngIf="f.note.errors.pattern">Ghi chú không hợp lệ!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-school prefix grey-text"></i>
+                        <select formControlName="school" class="md-form mdb-select md-form-custom" id="school" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.school.errors }">
+              <option value="" selected disabled hidden>Trường học</option>
+              <option *ngFor="let item of filterNotId(listSchool, '')" value="{{item.Id}}">{{item.FullName}}</option>
+            </select>
+                        <div *ngIf="submitted && f.school.errors">
+                            <div *ngIf="f.school.errors.required" class="st_ch">Trường học không được để trống</div>
+                        </div>
+                    </div>
+
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-hourglass prefix grey-text"></i>
+                        <select formControlName="selectNam" class="md-form mdb-select md-form-custom" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.selectNam.errors }">
+              <option value="" selected disabled hidden>Năm học</option>
+              <option value="1">Năm 1</option>
+              <option value="2">Năm 2</option>
+              <option value="3">Năm 3</option>
+              <option value="4">Năm 4</option>
+              <option value="5">Năm 5</option>
+            </select>
+                        <div *ngIf="submitted && f.selectNam.errors" class="invalid-text">
+                            <div *ngIf="f.selectNam.errors.required" class="st_ch">Năm học không được để trống</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-code prefix grey-text"></i>
+                        <select formControlName="formNgonNgu" class="md-form mdb-select md-form-custom" style="width: 85%;" required>
+              <option value="" selected disabled hidden>Ngôn ngữ</option>
+              <option *ngFor="let item of listLanguage" value="{{item.Id}}">{{item.Name}}
+              </option>
+            </select>
+                        <div *ngIf="submitted && f.formNgonNgu.errors">
+                            <div *ngIf="f.formNgonNgu.errors.required" class="st_ch">Ngôn ngữ không được để trống</div>
+                        </div>
+                    </div>
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="gpa" type="number" id="gpa" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.gpa.errors }">
+                        <label for="gpa">GPA</label>
+                        <div *ngIf="submitted && f.gpa.errors" class="invalid-feedback">
+                            <div *ngIf="f.gpa.errors.required">GPA không được để trống!</div>
+                            <div *ngIf="f.gpa.errors.min">GPA không được nhỏ hơn 0.0!</div>
+                            <div *ngIf="f.gpa.errors.max">GPA không được lớn hơn 4.0!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-phone prefix grey-text"></i>
+                        <input formControlName="phone" type="text" id="phone" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.phone.errors }">
+                        <label for="phone">SĐT</label>
+                        <div *ngIf="submitted && f.phone.errors" class="invalid-feedback">
+                            <div *ngIf="f.phone.errors.required">Số điện thoại không được để trống!</div>
+                            <div *ngIf="f.phone.errors.pattern">Số điện thoại không hợp lệ!</div>
+                            <div *ngIf="f.phone.errors.minlength">Số điện thoại không được nhỏ hơn 10 ký tự!</div>
+                            <div *ngIf="f.phone.errors.maxlength">Số điện thoại không được lớn hơn 10 ký tự!</div>
+                        </div>
+                    </div>
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="jlpt" type="number" id="form30" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.jlpt.errors }">
+                        <label for="form30">JLPT</label>
+                        <div *ngIf="submitted && f.jlpt.errors" class="invalid-feedback">
+                            <!-- <div *ngIf="f.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div> -->
+                            <div *ngIf="f.jlpt.errors.min">Điểm tiếng nhật không được nhỏ hơn 0!</div>
+                            <div *ngIf="f.jlpt.errors.max">Điểm tiếng nhật không được lớn hơn 5!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-sm btn-student">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            <i *ngIf ="!loading" class="far fa-check-circle"></i> Lưu
+          </button>
+                    <button type="reset" class="btn btn-danger btn-sm btn-student btn-margin-left-35" (click)="onReset()">
+            <i class="fa fa-ban "></i> Hủy
+          </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal view option -->
+<div class="modal fade" id="modalViewOption" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">View option</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body mx-3" style="margin-top: 15px;">
+                <div>
+                    <p>Số bản ghi trên một trang:</p>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline1" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(10);" [checked]="itemsPerPage == 10">
+                        <label class="custom-control-label" for="customRadioInline1">10</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline2" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(20);" [checked]="itemsPerPage == 20">
+                        <label class="custom-control-label" for="customRadioInline2">20</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline3" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(50);" [checked]="itemsPerPage == 50">
+                        <label class="custom-control-label" for="customRadioInline3">50</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="customRadioInline4" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(100);" [checked]="itemsPerPage == 100">
+                        <label class="custom-control-label" for="customRadioInline4">100</label>
+                    </div>
+                </div>
+                <div class="select-view">
+                    <p>Hiển thị bảng:</p>
+                    <div class="custom-control custom-checkbox custom-control-inline col-md-6" *ngFor="let item of listColumnStudentTable">
+                        <input type="checkbox" class="custom-control-input" id="id-{{item.value}}" (click)="toggleByCheckBox($event)" [checked]="viewOption[item.value] == true">
+                        <label class="custom-control-label" for="id-{{item.value}}">{{item.label}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal detail -->
+<div class="modal fade" id="modalContactFormDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-w-750" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Xem chi tiết sinh viên</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body mx-3" [formGroup]="DetailStudentForm">
+                <div class="row">
+                    <div class="md-form col-md-7">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <input formControlName="name" type="text" class="form-control">
+                        <label class="active">Họ tên</label>
+                    </div>
+                    <div class="md-form col-md-5">
+                        <i class="fas fa-genderless prefix grey-text"></i>
+                        <input formControlName="sex" type="text" class="form-control">
+                        <label class="active">Giới tính</label>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="md-form col-md-12">
+                        <i class="fas fa-map-marker-alt prefix grey-text"></i>
+                        <input formControlName="address" type="text" class="form-control">
+                        <label class="active">Địa chỉ</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="md-form col-md-12">
+                        <i class="fas fa-address-card prefix grey-text"></i>
+                        <input formControlName="linkcv" type="text" class="form-control">
+                        <label class="active">Link CV</label>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-12">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <input formControlName="email" type="email" class="form-control">
+                        <label class="active">Email</label>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-12">
+                        <i class="fas fa-clipboard prefix grey-text"></i>
+                        <input formControlName="note" type="text" class="form-control">
+                        <label class="active">Ghi chú</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7">
+                        <i class="fas fa-school prefix grey-text"></i>
+                        <input formControlName="school" type="text" class="form-control" style="width: 85%;">
+                        <label class="active">Trường</label>
+                    </div>
+                    <div class="md-form col-md-5">
+                        <i class="fas fa-hourglass prefix grey-text"></i>
+                        <input formControlName="selectNam" type="number" class="form-control" style="width: 85%;">
+                        <label class="active">Năm thứ</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7">
+                        <i class="fas fa-code prefix grey-text"></i>
+                        <input formControlName="formNgonNgu" type="text" class="form-control" style="width: 85%;">
+                        <label class="active">Ngôn ngữ</label>
+                    </div>
+                    <div class="md-form col-md-5">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="gpa" type="number" class="form-control">
+                        <label class="active">GPA</label>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 50px;">
+                    <div class="md-form col-md-7">
+                        <i class="fas fa-phone prefix grey-text"></i>
+                        <input formControlName="phone" type="text" class="form-control" style="width: 85%;">
+                        <label class="active">SĐT</label>
+                    </div>
+                    <div class="md-form col-md-5">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="jlpt" type="number" class="form-control">
+                        <label class="active">JLPT</label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal edit -->
+<div class="modal fade" id="modalContactFormEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-w-750" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Sửa thông tin sinh viên</h4>
+                <button #closebuttonUpdate type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+
+            <form class="modal-body mx-3" [formGroup]="UpdateStudentForm" (ngSubmit)="onSubmitUpdateStudent()">
+
+                <div class="row">
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <input formControlName="name" type="text" id="name-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.name.errors }">
+                        <label for="name-edit" class="active">Họ tên</label>
+                        <div *ngIf="submitted && u.name.errors" class="invalid-feedback">
+                            <div *ngIf="u.name.errors.required">Tên không được để trống!</div>
+                            <div *ngIf="u.name.errors.minlength">Tên quá ngắn!</div>
+                            <div *ngIf="u.name.errors.maxlength">Tên quá dài!</div>
+                            <div *ngIf="u.name.errors.pattern">Tên không hợp lệ!</div>
+                        </div>
+                    </div>
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-genderless prefix grey-text"></i>
+                        <select formControlName="sex" class="md-form mdb-select md-form-custom" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.sex.errors }">
+              <option value="" selected disabled hidden>Giới tính</option>
+              <option value="1">Nam</option>
+              <option value="0">Nữ</option>
+            </select>
+                        <div *ngIf="submitted && u.sex.errors" class="invalid-feedback">
+                            <div *ngIf="u.sex.errors.required" class="st_ch">Giới tính không được để trống</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-map-marker-alt prefix grey-text"></i>
+                        <input formControlName="address" type="text" id="address-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.address.errors }">
+                        <label for="address-edit" class="active">Địa chỉ</label>
+                        <div *ngIf="submitted && u.address.errors" class="invalid-feedback">
+                            <div *ngIf="u.address.errors.required">Địa chỉ không được để trống!</div>
+                            <div *ngIf="u.address.errors.minlength">Địa chỉ quá ngắn!</div>
+                            <div *ngIf="u.address.errors.maxlength">Địa chỉ quá dài!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-address-card prefix grey-text"></i>
+                        <input formControlName="linkcv" type="text" id="linkcv-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.linkcv.errors }">
+                        <label for="linkcv-edit" class="active">Link CV</label>
+                        <div *ngIf="submitted && u.linkcv.errors" class="invalid-feedback">
+                            <div *ngIf="u.linkcv.errors.required">Link CV không được để trống!</div>
+                            <div *ngIf="u.linkcv.errors.pattern">Link CV không hợp lệ!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <input formControlName="email" type="email" id="email-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.email.errors }">
+                        <label for="email-edit" class="active">Email</label>
+                        <div *ngIf="submitted && u.email.errors" class="invalid-feedback">
+                            <div *ngIf="u.email.errors.required">Email không được để trống!</div>
+                            <!-- <div *ngIf="u.email.errors.email">Email không hợp lệ!</div> -->
+                            <div *ngIf="u.email.errors.pattern">Email không hợp lệ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-12">
+                        <i class="fas fa-clipboard prefix grey-text"></i>
+                        <input formControlName="note" type="text" id="note-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.note.errors }">
+                        <label for="note-edit" class="active">Ghi chú</label>
+                        <div *ngIf="submitted && u.note.errors" class="invalid-feedback">
+                            <!-- <div *ngIf="f.note.errors.required">Ghi chú không được để trống!</div> -->
+                            <div *ngIf="u.note.errors.pattern">Ghi chú không hợp lệ!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-school prefix grey-text"></i>
+                        <select formControlName="school" class="md-form mdb-select md-form-custom" id="school-edit" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && u.school.errors }">
+              <option value="0" disabled selected>Trường học</option>
+              <option *ngFor="let item of filterNotId(listSchool, '')" value="{{item.Id}}">{{item.FullName}}</option>
+            </select>
+                        <div *ngIf="submitted && u.school.errors">
+                            <div *ngIf="u.school.errors.required" class="st_ch">Trường học không được để trống</div>
+                        </div>
+                    </div>
+
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-hourglass prefix grey-text"></i>
+                        <select formControlName="selectNam" class="md-form mdb-select md-form-custom" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && u.selectNam.errors }">
+              <option value="0" disabled selected>Năm học</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+                        <div *ngIf="submitted && u.selectNam.errors" class="invalid-text">
+                            <div *ngIf="u.selectNam.errors.required" class="st_ch">Năm học không được để trống</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-code prefix grey-text"></i>
+                        <select formControlName="formNgonNgu" class="md-form mdb-select md-form-custom" style="width: 85%;" required>
+              <option value="" disabled>Ngôn ngữ</option>
+              <option *ngFor="let item of listLanguage" value="{{item.Id}}">{{item.Name}}
+              </option>
+            </select>
+                        <div *ngIf="submitted && u.formNgonNgu.errors">
+                            <div *ngIf="u.formNgonNgu.errors.required" class="st_ch">Ngôn ngữ không được để trống</div>
+                        </div>
+                    </div>
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="gpa" type="number" id="gpa-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.gpa.errors }">
+                        <label for="gpa-edit" class="active">GPA</label>
+                        <div *ngIf="submitted && u.gpa.errors" class="invalid-feedback">
+                            <div *ngIf="u.gpa.errors.required">GPA không được để trống!</div>
+                            <div *ngIf="u.gpa.errors.min">GPA không được nhỏ hơn 0.0!</div>
+                            <div *ngIf="u.gpa.errors.max">GPA không được lớn hơn 4.0!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="md-form col-md-7 col-sm-12">
+                        <i class="fas fa-phone prefix grey-text"></i>
+                        <input formControlName="phone" type="text" id="phone-edit" class="form-control" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && u.phone.errors }">
+                        <label for="phone-edit" class="active">SĐT</label>
+                        <div *ngIf="submitted && u.phone.errors" class="invalid-feedback">
+                            <div *ngIf="u.phone.errors.required">Số điện thoại không được để trống!</div>
+                            <div *ngIf="u.phone.errors.pattern">Số điện thoại không hợp lệ!</div>
+                            <div *ngIf="u.phone.errors.minlength">Số điện thoại không được nhỏ hơn 10 ký tự!</div>
+                            <div *ngIf="u.phone.errors.maxlength">Số điện thoại không được lớn hơn 10 ký tự!</div>
+                        </div>
+                    </div>
+                    <div class="md-form col-md-5 col-sm-12">
+                        <i class="fas fa-graduation-cap prefix grey-text"></i>
+                        <input formControlName="jlpt" type="number" id="jlpt-edit" class="form-control" [ngClass]="{ 'is-invalid': submitted && u.jlpt.errors }">
+                        <label for="jlpt-edit" class="active">JLPT</label>
+                        <div *ngIf="submitted && u.jlpt.errors" class="invalid-feedback">
+                            <!-- <div *ngIf="u.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div> -->
+                            <div *ngIf="u.jlpt.errors.min">Điểm tiếng nhật không được nhỏ hơn 0!</div>
+                            <div *ngIf="u.jlpt.errors.max">Điểm tiếng nhật không được lớn hơn 5!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <input formControlName="id" type="number" hidden>
+                <input formControlName="status" type="text" hidden>
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-sm btn-student">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            <i *ngIf="!loading" class="far fa-check-circle"></i> Lưu
+          </button>
+                    <button type="reset" class="btn btn-danger btn-sm btn-student btn-margin-left-35" data-dismiss="modal">
+            <i class="fa fa-ban "></i> Hủy
+          </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal confirm -->
+<div class="modal fade" id="modalConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Xóa</h5>
+                <button #btnCloseConfirm type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body" style="margin-top: 25px;">
+                Bạn có chắc chắn muốn xóa thông tin sinh viên "<span style="font-weight: bold;">{{nameStudentDelete || ''}}</span>"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-sm" (click)="deleteSinhVien(idStudentDelete)">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Xóa
+        </button>
+            </div>
+        </div>
+    </div>
+</div>

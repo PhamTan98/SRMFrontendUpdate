@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "http://api-sakura.ominext.co",
+    "secure": false
+  }
+}

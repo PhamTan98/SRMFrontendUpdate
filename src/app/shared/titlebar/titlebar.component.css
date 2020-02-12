@@ -1,0 +1,14 @@
+.row a i, .row a{
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+}
+.row{
+    background-color: #ffffff; 
+    height: 50px; 
+    padding-left: 50px; 
+    padding-right: 0px; 
+    border-bottom: 1px solid #c4c4c4;
+    padding-top: 4px;
+    margin-bottom: 15px;
+}

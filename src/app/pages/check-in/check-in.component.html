@@ -1,0 +1,264 @@
+<!-- Search -->
+<div class="col-md-12 card-action">
+    <div class="row query col-md-12">
+      <div class="col-md-9 col-sm-9 col-9 row">
+        <button class="au-btn btn-backlog position-relative" (click)="toggleSearch()">
+          <i class="fas fa-chevron-down position-absolute" *ngIf="!isOpen"></i>
+          <i class="fas fa-chevron-up position-absolute" *ngIf="isOpen"></i>
+          <span>Tìm kiếm</span> 
+        </button>
+      </div>
+      <div class="col-md-3 col-sm-3 col-3" style="margin-right: 0px;padding-right: 0px;margin-left: 30px;">
+        <div class="row float-right">
+          <button class="au-btn au-btn-icon btn-backlog-round au-btn--small" style="margin-right: 0px;" (click)="export()" >
+            <i class="fas fa-download"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col-md-12 condition-div" [@openClose]="isOpen ? 'open': 'closed'">
+      <div class="row table-row basic-search">
+        <div class="col-md-3">
+          <label for="searchInput">Keyword:</label>
+          <form>
+            <div class="ng-select" style="position: relative;">
+              <input type="text" name="search" id="searchInput" class="form-control input-search" placeholder="Keyword..." [(ngModel)]="filter" (keyup)="showBtnDelete()">
+              <i class="fas fa-search icon-search" style="color: #999;"></i>
+              <i class="fas fa-times icon-delete-search grey-text d-none cursor" id="icon-delete-search" (click)="deleteSearch()"></i>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-3">
+          <label for="schoolSelect">Trường:</label>
+          <ng-select [items]="listSchool"
+              bindValue = "Id"
+              bindLabel = "FullName"
+              labelForId = "schoolSelect"
+              [(ngModel)]="myFilter.IdSchool">
+          </ng-select>
+        </div>
+        <div class="col-md-2">
+            <label for="NNSelect">Ngôn ngữ:</label>
+            <ng-select [items]="listLanguage"
+                bindValue = "Id"
+                bindLabel = "Name"
+                labelForId = "NNSelect"
+                [(ngModel)]="myFilter.IdLanguages">
+            </ng-select>
+        </div>
+        <div class="col-md-2">
+          <label for="yearSelect">Năm thứ:</label>
+          <ng-select [items]="listYear"
+              bindValue = "value"
+              labelForId = "yearSelect"
+              [(ngModel)]="myFilter.Year">
+          </ng-select>
+        </div>
+        <div class="col-md-2">
+          <label for="statusSelect">Trạng thái:</label>
+          <ng-select [items]="listStatus"
+              bindValue = "value"
+              bindLabel = "label"
+              labelForId = "statusSelect"
+              [(ngModel)]="myFilter.Status">
+          </ng-select>
+        </div>
+      </div>
+    </div>
+  
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+    <div class="col-md-6 row text-sm-center">
+        <div style="padding-left: 45px;">
+        <span>{{(listStudent | filter: filter | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+            {{itemsPerPage*p <= (listStudent | filter: filter | filterBy: myFilter).length? itemsPerPage*p : (listStudent | filter: filter | filterBy: myFilter).length}} of {{(listStudent | filter: filter | filterBy: myFilter).length}}
+        </span>
+        </div>
+        <div style="padding-left: 15px;">
+        <pagination-controls 
+            (pageChange)="p = $event" 
+            class="pagination-control"
+            previousLabel="Prev">
+        </pagination-controls>
+        </div>
+    </div>
+
+    <div class="col-md-6 text-sm-center" style="padding-right: 0px;">
+        <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+        <i class="fas fa-cog"></i> View 
+        </button>
+    </div>
+
+</div>
+
+<!-- Table data -->
+<div class="row table-row">
+    <div class="col-md-12">
+      <div class="card data-card">
+        <div class="card-body data-card-body">
+          <table class="table table-striped table-hover" mdbTable hover="true">
+            <thead class=" text-primary">
+              <th [class.active]="order === 'STT'" (click)="setOrder('STT')" class="cursor" title="Filter by STT" *ngIf="viewOption.STT">
+                STT <span class="fas fa-sort" *ngIf="order != 'STT'" style="opacity: 0.4;"></span>
+                <span class="fas" *ngIf="order === 'STT'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+              </th>
+              <th [class.active]="order === 'Name'" (click)="setOrder('Name')" class="cursor" title="Filter by name" *ngIf="viewOption.FullName">
+                Tên <span class="fas fa-sort" *ngIf="order != 'Name'" style="opacity: 0.4;"></span>
+                <span class="fas" *ngIf="order === 'Name'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+              </th>
+              <th *ngIf="viewOption.CV">CV</th>
+              <th *ngIf="viewOption.Sex" class="d-none d-md-table-cell">G/Tính</th>
+              <th class="d-none d-md-table-cell" *ngIf="viewOption.Truong">Trường</th>
+              <th [class.active]="order === 'Year'" (click)="setOrder('Year')" class="d-none d-md-table-cell cursor" title="Filter by year" *ngIf="viewOption.Year">
+                Năm <span class="fas fa-sort" *ngIf="order != 'Year'" style="opacity: 0.4;"></span>
+                <span class="fas" *ngIf="order === 'Year'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+              </th>
+              <th class="d-none d-sm-table-cell" *ngIf="viewOption.NgonNgu">N/ngữ</th>
+              <th [class.active]="order === 'GPA'" (click)="setOrder('GPA')" class="d-none d-sm-table-cell cursor" title="Filter by GPA" *ngIf="viewOption.GPA">
+                GPA <span class="fas fa-sort" *ngIf="order != 'GPA'" style="opacity: 0.4;"></span>
+                <span class="fas" *ngIf="order === 'GPA'" [ngClass]="{'fa-sort-up':!reverse,'fa-sort-down':reverse}"></span>
+              </th>
+              <th class="d-none d-xl-table-cell" *ngIf="viewOption.Phone">SĐT</th>
+              <th class="d-none d-xl-table-cell" *ngIf="viewOption.Email">Email</th>
+              <th class="d-none d-sm-table-cell" *ngIf="viewOption.GhiChu">G/chú</th>
+              <th *ngIf="viewOption.Status">Status</th>
+              <th *ngIf="viewOption.Action">Action</th>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let s of listStudent | orderBy: order:reverse:'case-insensitive' | filter: filter | filterBy: myFilter | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+                <td class="text-right stt" *ngIf="viewOption.STT">
+                  {{i+1}}
+                </td>
+                <td class="text-left" *ngIf="viewOption.FullName">
+                  {{s.FullName}}
+                </td>
+                <td class="text-center" *ngIf="viewOption.CV">
+                  <a href="{{s.CV}}">Click</a>
+                </td>
+                <td class="text-center d-none d-md-table-cell" *ngIf="viewOption.Sex">
+                    {{s.Sex == 1? 'Nam':'Nữ'}}
+                </td>
+                <td class="d-none d-md-table-cell text-left" *ngIf="viewOption.Truong">
+                  {{s.NameSchool}}
+                </td>
+                <td class="d-none d-md-table-cell text-center" *ngIf="viewOption.Year">
+                  {{s.Year}}
+                </td>
+                <td class="d-none d-sm-table-cell text-left" *ngIf="viewOption.NgonNgu">
+                  {{s.NameLanguages}}
+                </td>
+                <!-- <td class="d-none d-lg-table-cell text-center" *ngIf="namsinh">
+                  1999
+                </td> -->
+                <td class="d-none d-sm-table-cell text-right gpa" *ngIf="viewOption.GPA">
+                  {{s.GPA}}
+                </td>
+                <td class="d-none d-xl-table-cell text-center" *ngIf="viewOption.Phone">
+                  {{s.Phone}}
+                </td>
+                <td class="d-none d-xl-table-cell text-left" *ngIf="viewOption.Email">
+                  {{s.Email}}
+                </td>
+                <td class="d-none d-sm-table-cell text-left" *ngIf="viewOption.GhiChu">
+                  {{s.Details}}
+                </td>
+                <td class="text-left" *ngIf="viewOption.Status">
+                  <div [className]="badgeStatus(s.Status).classStatus">{{badgeStatus(s.Status).label}}</div>
+                </td>
+
+                <td class="d-flex justify-content-between align-items-center action-sv" *ngIf="viewOption.Action">
+                  <div class="table-data-feature">
+                    <div ngbDropdown>
+                      <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                        <button class="item" data-toggle="tooltip" title="Duyệt" [attr.id]="'dropdownBasic'+i" ngbDropdownToggle></button>
+                        <div ngbDropdownMenu [attr.aria-labelledby]="'dropdownBasic'+i" style="display: inline; transition: none;">
+
+                          <button ngbDropdownItem *ngFor="let status of filterNotValue(listStatusCheckIn,'')" (click)="updateStatusSinhVien(s.Id, s.FullName, status.value)">{{status.label}}</button>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="(listStudent | filter: filter | filterBy: myFilter).length === 0" class="no-item text-center col-12">
+            <p>No matching elements</p>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="row pagi" style="margin-right: 0px;">
+  <div class="col-md-6 row text-sm-center">
+      <div style="padding-left: 45px;">
+      <span>{{(listStudent | filter: filter | filterBy: myFilter).length === 0? 0 : itemsPerPage*(p-1) + 1}} -
+          {{itemsPerPage*p <= (listStudent | filter: filter | filterBy: myFilter).length? itemsPerPage*p : (listStudent | filter: filter | filterBy: myFilter).length}} of {{(listStudent | filter: filter | filterBy: myFilter).length}}
+      </span>
+      </div>
+      <div style="padding-left: 15px;">
+      <pagination-controls 
+          (pageChange)="p = $event" 
+          class="pagination-control"
+          previousLabel="Prev">
+      </pagination-controls>
+      </div>
+  </div>
+
+  <div class="col-md-6 text-sm-center" style="padding-right: 0px;">
+      <button class="au-btn au-btn-icon btn-backlog-round au-btn--small float-md-right" style="margin-right: 0px; margin-top: -10px;" data-toggle="modal" data-target="#modalViewOption">
+      <i class="fas fa-cog"></i> View 
+      </button>
+  </div>
+
+</div>
+
+<!-- Modal view option -->
+<div class="modal fade" id="modalViewOption" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">View option</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body mx-3" style="margin-top: 15px;">
+            <div>
+            <p>Số bản ghi trên một trang:</p>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline1" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(10)" [checked]="itemsPerPage == 10">
+                <label class="custom-control-label" for="customRadioInline1">10</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline2" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(20)" [checked]="itemsPerPage == 20">
+                <label class="custom-control-label" for="customRadioInline2">20</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline3" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(50)" [checked]="itemsPerPage == 50">
+                <label class="custom-control-label" for="customRadioInline3">50</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="customRadioInline4" name="item-per-page" class="custom-control-input" (click)="saveItemPerPageToSession(100)" [checked]="itemsPerPage == 100">
+                <label class="custom-control-label" for="customRadioInline4">100</label>
+            </div>
+            </div>
+            <div class="select-view">
+            <p>Hiển thị bảng:</p>
+            <div class="custom-control custom-checkbox custom-control-inline col-md-6" *ngFor="let item of listColumnStudentTable">
+              <input type="checkbox" class="custom-control-input" id="id-{{item.value}}" (click)="toggleByCheckBox($event)" [checked]="viewOption[item.value] == true">
+              <label class="custom-control-label" for="id-{{item.value}}">{{item.label}}</label>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
