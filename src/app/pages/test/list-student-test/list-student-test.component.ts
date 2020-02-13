@@ -48,8 +48,8 @@ export class ListTestComponent implements OnInit {
   private isOpen = true; //show hide search div
   private basicSearch = false; private advancedSearch = true;
   submitted = false;
-  private stt = true; ten = true; cv = true; truong = true; nam = true; ngonngu = true; gender = true;
-  gpa = true; sdt = true; email = true; ghichu = true; trangthai = true; action = true;
+  private stt = true; name = true; cv = true; school = true; year = true; language = true; gender = true;
+  gpa = true; email = true; status = true; action = true;
   // private saveStudent: Student; 
   order: string = 'Name';
   reverse: boolean = false;
@@ -58,8 +58,9 @@ export class ListTestComponent implements OnInit {
 
   private listStudent = []; listStudentAfterFilter = [];
   listStatus = this.dataService.listStatus;
-
+  listKQTest = this.dataService.listKQTest;
   listTest = [];
+  TestSubject = [];
   listLanguage = [];
   listSakura = [];
   listColumnStudentTable = this.dataService.listColumnStudentTable;
@@ -78,7 +79,6 @@ export class ListTestComponent implements OnInit {
   }
 
   private StudentTest = [];
-  private TestSubject = [];
   // private Test=[];
   ngOnInit() {
     this.userService.getSakuraSchoolLanguages().pipe(first()).subscribe(response => {
@@ -86,16 +86,17 @@ export class ListTestComponent implements OnInit {
       this.listLanguage = response.body["Languages"];
       this.listLanguage.unshift({ Id: '', Name: 'Tất cả' });
     })
+
     this.userService.GetListStudentTests(this.idSakura).pipe(first()).subscribe(response => {
       this.StudentTest = response.body["students"];
       this.TestSubject = response.body["TestSubjects"];
-      console.log(this.TestSubject);
+      //console.log(this.TestSubject);
     });
     this.userService.getListTest().pipe(first()).subscribe(response => {
       this.listTest = response.body;
     })
     //ViewOption:
-    var view = localStorage.getItem('viewOptionStudenttest')
+    var view = localStorage.getItem('viewOption')
     if (view) {
       this.viewOption = JSON.parse(view);
       this.itemsPerPage = JSON.parse(view).itemPerPage;
@@ -144,7 +145,7 @@ export class ListTestComponent implements OnInit {
     }
   }
   saveViewOptionToSession() {
-    localStorage.setItem('viewOptionStudenttest', JSON.stringify(this.viewOption));
+    localStorage.setItem('viewOption', JSON.stringify(this.viewOption));
   }
   saveItemPerPageToSession(itemPerPage: number) {
     this.viewOption.itemPerPage = itemPerPage;
@@ -156,15 +157,12 @@ export class ListTestComponent implements OnInit {
     }
     this.order = value;
   }
-  //Phan loai:
-  phanLoaiKetQua() {
 
-  }
   GetListStudentBySakura() {
     this.userService.GetListStudentTests(this.idSakura).pipe(first()).subscribe(response => {
       this.StudentTest = response.body["students"];
     });
-    console.log(this.idSakura)
+    //console.log(this.idSakura)
   }
 
   //Check string ton tai trong list object(loai hinh test):
@@ -200,6 +198,77 @@ export class ListTestComponent implements OnInit {
     this.idBaiTest = event.Id;
     this.nameBaiTest = event.Name;
   }
+
+  
+  private IdLoaiTest; nameloaiTest;
+  getIdLoaiTest(event) {
+    //console.log(event);
+    event.forEach(element => {
+      this.IdLoaiTest = element.Id;
+      this.nameloaiTest = element.Name;
+    });
+    
+  }
+  //Phan loai:
+  phanLoaiKetQua() {
+    
+    //Check neu chua chon loai hinh
+    if (this.IdLoaiTest == null) {
+      this.toastr.warning("Chưa chọn loại hình test.", "Lỗi!", {
+        timeOut: 3000,
+        positionClass: 'toast-top-right',
+        easing: 'ease-in',
+        closeButton: false
+      })
+      return;
+    }
+    var listStudentClassify = [];
+    var listInputCheck = <any>document.getElementsByClassName('input-choose-student');
+
+    var choosedStudent = false;
+    listInputCheck.forEach(input => {
+      if (input.checked == true) {
+        choosedStudent = true;
+        var student = { id: input.dataset.id, fullname: input.dataset.fullname };
+        listStudentClassify.push(student);
+      }
+    })
+    //Check neu chua chon sv:
+    if (!choosedStudent) {
+      this.toastr.warning("Chưa chọn sinh viên.", "Lỗi!", {
+        timeOut: 3000,
+        positionClass: 'toast-top-right',
+        easing: 'ease-in',
+        closeButton: false
+      })
+      return;
+    }
+   
+    this.userService.postArrangeTestResults(listStudentClassify)
+      .pipe(first())
+      .subscribe(
+        response => {
+          console.log("Code = " + response.status + " Message = " + response.body);
+          if (response.status == 200 && response.body != null) {
+            //Add success:
+            this.reloadDataAfterSubmit();
+            this.toastr.success(`Đã thêm ${listStudentClassify.length} sinh viên ${this.nameloaiTest} .`, "Thành công!", {
+              timeOut: 3000,
+              //positionClass: 'toast-top-right',
+              easing: 'ease-in',
+              closeButton: false
+            })
+            this.loading = false;
+          }
+        },
+        error => {
+
+        });
+    //Check KQ Test
+
+    //console.log(listStudentClassify);
+  }
+
   addSinhVienToTest() {
     //Check neu chua chon bai test:
     if (this.idBaiTest == null) {
@@ -233,7 +302,7 @@ export class ListTestComponent implements OnInit {
       })
       return;
     }
-    console.log(listStudentAddTest);
+    //console.log(listStudentAddTest);
     this.loading = true;
     var Tests = { Id: this.idBaiTest }
     this.userService.postSinhVienToTest(Tests, listStudentAddTest)

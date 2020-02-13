@@ -41,18 +41,13 @@
 
                 <div class="col-md-2">
                     <label for="exampleFormControlSelect2">Kết quả test:</label>
-                    <select class="form-control" id="exampleFormControlSelect2">
-                        <option value="0">Tất cả</option>
-                        <option value="2.499"> Pass </option>
-                        <option value="2.5"> Fail </option>
-                        <option value="3"> Waiting </option>
-                        <option value="3.5"> None </option>
-                    </select>
+                    <ng-select [items]="listKQTest" bindValue="value" placeholder="KQ Test" labelForId="KQTestSelect" [(ngModel)]="myFilter.Id">
+                    </ng-select>
                 </div>
 
                 <div class="col-md-2">
                     <label for="SakuraSelect">Mùa Sakura:</label>
-                    <ng-select [items]="listSakura" (change)="GetListStudentBySakura()" bindValue="Id" bindLabel="Name" placeholder="Mùa sakura" labelForId="SakuraSelect" [(ngModel)]="idSakura">
+                    <ng-select [items]="listSakura" (change)="GetListStudentBySakura()" bindLabel="Name" placeholder="Mùa sakura" labelForId="SakuraSelect" [(ngModel)]="myFilter.idSakura">
                     </ng-select>
                 </div>
                 <div class="col-md-2">
@@ -64,19 +59,19 @@
             <div class="row col-md-12 condition-div">
                 <div class="col-md-3 IQ-EQ-Select">
                     <label for="IQ-EQ-Select">Sắp xếp phân loại kết quả:</label>
-                    <ng-select [items]="TestSubject" bindValue="Id" bindLabel="Name" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true" placeholder="Sắp xếp phân loại kết quả:" labelForId="IQ-EQ-Select" [(ngModel)]="myFilter">
+                    <ng-select [items]="TestSubject" bindLabel="Name" [multiple]="true" [closeOnSelect]="false" [hideSelected]="true" placeholder="Sắp xếp phân loại kết quả:" labelForId="IQ-EQ-Select" (change)="getIdLoaiTest($event)">
                     </ng-select>
                 </div>
                 <div class="col-md-3 Exam-Select">
                     <label for="Exam-Select">Bài test đầu vào:</label>
-                    <ng-select [items]="listTest" bindValue="Id" bindLabel="Name" placeholder="Chọn bài test" labelForId="Exam-Select" (change)="getIdBaiTest($event)">
+                    <ng-select [items]="listTest" bindLabel="Name" placeholder="Chọn bài test" labelForId="Exam-Select" (change)="getIdBaiTest($event)">
                     </ng-select>
                 </div>
                 <div class="col-md-6 text-right btnLoc">
                     <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" style="margin-right: 15px;" data-toggle="modal" (click)="addSinhVienToTest()">
                         <i class="fas position-absolute"></i> <span>Thêm sinh viên test</span>
                       </button>
-                    <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" data-toggle="modal" data-target="#modalConfirmclassify" (click)="phanLoaiKetQua()">
+                    <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg" data-toggle="modal" (click)="phanLoaiKetQua()">
                         <i class="fas position-absolute"></i> <span> Phân loại kết quả</span>
                       </button>
                     <button class="au-btn au-btn-icon au-btn--small btn-backlog-round btn-whitebg">
@@ -129,18 +124,18 @@
                         <th [class.active]="order==='STT'" (click)="setOrder( 'STT')" class="cursor" title="Filter by STT" *ngIf="stt">STT
                             <span class="fas" *ngIf="order==='STT'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
                         </th>
-                        <th [class.active]="order==='Name'" (click)="setOrder( 'Name')" class="cursor" title="Filter by name" *ngIf="ten">Tên
+                        <th [class.active]="order==='Name'" (click)="setOrder( 'Name')" class="cursor" title="Filter by name" *ngIf="name">Tên
                             <span class="fas" *ngIf="order==='Name'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
                         </th>
                         <th *ngIf="gender" class="d-none d-md-table-cell">G/Tính</th>
-                        <th class="d-none d-md-table-cell" *ngIf="truong">Trường</th>
-                        <th [class.active]="order==='Year'" (click)="setOrder( 'Year')" class="d-none d-md-table-cell" title="Filter by year" *ngIf="nam">Năm
+                        <th class="d-none d-md-table-cell" *ngIf="school">Trường</th>
+                        <th [class.active]="order==='Year'" (click)="setOrder( 'Year')" class="d-none d-md-table-cell" title="Filter by year" *ngIf="year">Năm
                             <span class="fas" *ngIf="order==='Year'" [ngClass]="{ 'fa-sort-amount-up':!reverse, 'fa-sort-amount-down':reverse}"></span>
                         </th>
-                        <th class="d-none d-sm-table-cell" *ngIf="ngonngu">N/ngữ</th>
+                        <th class="d-none d-sm-table-cell" *ngIf="language">N/ngữ</th>
                         <th class="d-none d-xl-table-cell" *ngFor="let item of TestSubject">{{item.Id}}</th>
                         <th class="d-none d-sm-table-cell">KQ Test</th>
-                        <th class="text-center" *ngIf="trangthai">T/Thái</th>
+                        <th class="text-center" *ngIf="status">T/Thái</th>
                         <th *ngIf="action" style="text-align: center;">Hành động</th>
                     </thead>
                     <tbody>
@@ -154,19 +149,19 @@
                             <td class="text-left stt" *ngIf="stt">
                                 {{i+1}}
                             </td>
-                            <td class="text-center" *ngIf="ten">
+                            <td class="text-center" *ngIf="name">
                                 {{s.FullName}}
                             </td>
                             <td class="d-none d-md-table-cell text-center" *ngIf="gender">
                                 {{s.Sex == 1? 'Nam':'Nữ'}}
                             </td>
-                            <td class="d-none d-md-table-cell text-center" *ngIf="truong">
+                            <td class="d-none d-md-table-cell text-center" *ngIf="school">
                                 {{s.NameSchool}}
                             </td>
-                            <td class="d-none d-md-table-cell text-center" *ngIf="nam">
+                            <td class="d-none d-md-table-cell text-center" *ngIf="year">
                                 {{s.Year}}
                             </td>
-                            <td class="d-none d-sm-table-cell text-center" *ngIf="ngonngu">
+                            <td class="d-none d-sm-table-cell text-center" *ngIf="language">
                                 {{s.NameLanguages}}
                             </td>
 
@@ -176,9 +171,9 @@
                                 </span>
                             </td>
                             <td class="d-none d-sm-table-cell text-center">
-                                Test
+                                {{s.Result}}
                             </td>
-                            <td class="statuscss" *ngIf="trangthai">
+                            <td class="statuscss" *ngIf="status">
                                 <div [className]="LabelForStatus(s.Status).classStatus">{{LabelForStatus(s.Status).label}}</div>
                                 <!-- {{LabelForStatus(s.Status)}} -->
                             </td>
@@ -195,7 +190,7 @@
 
                 </table>
                 <div *ngIf="(StudentTest | orderBy: order:reverse: 'case-insensitive' | filter:filter | filterBy: filterByField | filterBy: myFilter).length===0" class="no-item text-center col-12">
-                    <p>No matching elements</p>
+                    <p>Không tìm thấy sinh viên nào</p>
                 </div>
             </div>
         </div>
@@ -254,13 +249,13 @@
                         <label class="custom-control-label" for="customRadioInline4">100</label>
                     </div>
                 </div>
-                <div class="select-view">
+                <!-- <div class="select-view">
                     <p>Hiển thị bảng:</p>
                     <div class="custom-control custom-checkbox custom-control-inline col-md-6" *ngFor="let item of listColumnStudentTable">
                         <input type="checkbox" class="custom-control-input" id="id-{{item.value}}" (click)="toggleByCheckBox($event)" [checked]="viewOption[item.value] == true">
                         <label class="custom-control-label" for="id-{{item.value}}">{{item.label}}</label>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

@@ -15,16 +15,29 @@ import { ListBaiTestComponent } from 'app/pages/test/list-test/list-test.compone
 import { ListuserComponent } from 'app/pages/users/listuser.component';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuard]},
-    { path: 'table',          component: TableComponent, canActivate: [AuthGuard] },
-    { path: 'typography',     component: TypographyComponent, canActivate: [AuthGuard] },
-    { path: 'icons',          component: IconsComponent, canActivate: [AuthGuard] },
-    { path: 'notifications',  component: NotificationsComponent, canActivate: [AuthGuard] },
-    { path: 'upgrade',        component: UpgradeComponent, canActivate: [AuthGuard] },
+    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+    { path: 'table', component: TableComponent, canActivate: [AuthGuard] },
+    { path: 'typography', component: TypographyComponent, canActivate: [AuthGuard] },
+    { path: 'icons', component: IconsComponent, canActivate: [AuthGuard] },
+    { path: 'notifications', component: NotificationsComponent, canActivate: [AuthGuard] },
+    { path: 'upgrade', component: UpgradeComponent, canActivate: [AuthGuard] },
     { path: 'danh-sach-sinh-vien',    component: StudentsComponent, canActivate: [AuthGuard] },
     { path: 'danh-sach-check-in',     component: CheckInComponent, canActivate: [AuthGuard] },
     { path: 'list-test',             component: ListTestComponent, canActivate: [AuthGuard]},
     { path: 'list-bai-test',     component: ListBaiTestComponent, canActivate: [AuthGuard]},
     { path: 'danh-sach-user',     component: ListuserComponent, canActivate: [AuthGuard]},
+    // {
+    //     path: 'danh-sach-sinh-vien', component: StudentsComponent, canActivate: [AuthGuard],
+    //     children: [
+    //         { path: 'danh-sach-check-in', component: CheckInComponent },
+    //         {
+    //             path: '',
+    //             children: [
+    //                 { path: 'list-test', component: ListTestComponent, canActivate: [AuthGuard] },
+    //                 { path: 'list-bai-test', component: ListBaiTestComponent, canActivate: [AuthGuard] }
+    //             ]
+    //         }
+    //     ],
+    // },
 ];
 

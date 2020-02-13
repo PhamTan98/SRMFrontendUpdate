@@ -18,6 +18,12 @@ export class DataService{
         { value: '3', label: 'Test' },
         { value: '4', label: 'Hẹn chế độ' },
     ];
+    listKQTest = [
+        { value: '', label: 'Tất cả' },
+        { value: '0', label: 'Pass' },
+        { value: '1', label: 'Fail' },
+        { value: '2', label: 'Waiting'},
+    ];
     badgeStatus(statusValue) {
         var status = {label:'', classStatus:''};
         switch (statusValue) {

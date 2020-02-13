@@ -94,8 +94,12 @@ export class UserService {
     GetListStudentTests(Id: number) {
         return this.http.post<any>(`http://api-sakura.ominext.co/api/test/GetListStudentTests`, { Id }, { observe: 'response' });
     }
+    
     private Tests = {Id: Number};
-    private SinhViens = [{id: Number, fullname: String}]
+    private SinhViens = [{id: Number, fullname: String}];
+    postArrangeTestResults(SinhViens){
+        return this.http.post<any>(`http://api-sakura.ominext.co/api/test/postArrangeTestResults`, {SinhViens}, { observe: 'response' });
+    }
     postSinhVienToTest(Tests, SinhViens) {
         return this.http.post<any>(`http://api-sakura.ominext.co/api/test/postSinhVienToTest`, { Tests, SinhViens}, { observe: 'response' });
     }

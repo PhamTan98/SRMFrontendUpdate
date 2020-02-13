@@ -15,6 +15,12 @@ export const ROUTES: RouteInfo[] = [
     { path: '/list-test',            title: 'Test',    icon:'nc-bullet-list-67',    class: '' },
     { path: '/list-bai-test',            title: 'Bài Test',    icon:'nc-badge',    class: '' },
     { path: '/danh-sach-user',            title: 'Người dùng',    icon:'nc-circle-10',    class: '' },
+    // { path: '/dashboard',           title: 'Trang chủ',             icon:'nc-bank',       class: '' },
+    // { path: '/danh-sach-sinh-vien', title: 'Sinh viên',   icon:'nc-bullet-list-67',    class: '' },
+    // { path: '/danh-sach-check-in',            title: 'Check-in',    icon:'nc-bell-55',    class: '' },
+    // { path: '/list-test',            title: 'Test',    icon:'nc-bullet-list-67',    class: '' },
+    // { path: '/list-bai-test',            title: 'Bài Test',    icon:'nc-badge',    class: '' },
+    // { path: '/danh-sach-user',            title: 'Người dùng',    icon:'nc-circle-10',    class: '' },
 ];
 
 @Component({

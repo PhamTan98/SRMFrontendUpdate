@@ -119,8 +119,9 @@ export class StudentsComponent implements OnInit{
 
         //ViewOption:
         var view = localStorage.getItem('viewOption')
-        if(view){
-            this.viewOption = JSON.parse(view);
+        if(JSON.parse(view).itemPerPage){
+            //this.viewOption = JSON.parse(view);
+            // this.itemsPerPage = JSON.parse(view).itemPerPage;
             this.itemsPerPage = JSON.parse(view).itemPerPage | this.itemsPerPage;
         }
          //Validate:
@@ -239,12 +240,12 @@ export class StudentsComponent implements OnInit{
             return;
         }
         this.loading = true;
-        var FullName = this.f.name.value;
+        var FullName = this.f.name.value.trim().toLowerCase();
         var Sex = this.f.sex.value;
-        var Address = this.f.address.value;
-        var Email = this.f.email.value;
-        var Phone = this.f.phone.value;
-        var CV = this.f.linkcv.value;
+        var Address = this.f.address.value.trim().toLowerCase();
+        var Email = this.f.email.value.trim().toLowerCase();
+        var Phone = this.f.phone.value.trim().toLowerCase();
+        var CV = this.f.linkcv.value.trim().toLowerCase();
         var JLPT = this.f.jlpt.value;
         var GPA:number = this.f.gpa.value;
         var Year:number = Number(this.f.selectNam.value);
@@ -614,6 +615,9 @@ export class StudentsComponent implements OnInit{
             this.filterByField[this.selectField] = this.filterCUSTOM;
         }
     }
+
+    //Export file excel
+
 
 
 }
