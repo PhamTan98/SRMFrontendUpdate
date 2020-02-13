@@ -451,7 +451,7 @@
                         <i class="fas fa-school prefix grey-text"></i>
                         <select formControlName="school" class="md-form mdb-select md-form-custom" id="school" style="width: 85%;" [ngClass]="{ 'is-invalid': submitted && f.school.errors }">
               <option value="" selected disabled hidden>Trường học</option>
-              <option *ngFor="let item of filterNotId(listSchool, '')" value="{{item.Id}}">{{item.FullName}}</option>
+              <option *ngFor="let item of filterNotId(listSchool, '') | orderBy : 'FullName'" value="{{item.Id}}">{{item.FullName}}</option>
             </select>
                         <div *ngIf="submitted && f.school.errors">
                             <div *ngIf="f.school.errors.required" class="st_ch">Trường học không được để trống</div>
@@ -479,7 +479,7 @@
                         <i class="fas fa-code prefix grey-text"></i>
                         <select formControlName="formNgonNgu" class="md-form mdb-select md-form-custom" style="width: 85%;" required>
               <option value="" selected disabled hidden>Ngôn ngữ</option>
-              <option *ngFor="let item of listLanguage" value="{{item.Id}}">{{item.Name}}
+              <option *ngFor="let item of listLanguage | orderBy : 'Name'" value="{{item.Id}}">{{item.Name}}
               </option>
             </select>
                         <div *ngIf="submitted && f.formNgonNgu.errors">
@@ -515,10 +515,10 @@
                         <input formControlName="jlpt" type="number" id="form30" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.jlpt.errors }">
                         <label for="form30" class="active">JLPT</label>
                         <div *ngIf="submitted && f.jlpt.errors" class="invalid-feedback">
-                            <div *ngIf="f.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div>
+                            <!-- <div *ngIf="f.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div> -->
                             <div *ngIf="f.jlpt.errors.min">Điểm tiếng nhật không được nhỏ hơn 0!</div>
                             <div *ngIf="f.jlpt.errors.max">Điểm tiếng nhật không được lớn hơn 5!</div>
-                            <div *ngIf="f.jlpt.errors.pattern">Điểm tiếng nhật không hợp lệ</div>
+                            <div *ngIf="f.jlpt.errors.pattern"></div>
                         </div>
                     </div>
                 </div>

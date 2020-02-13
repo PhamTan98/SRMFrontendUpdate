@@ -136,7 +136,7 @@ export class StudentsComponent implements OnInit{
             ]],
             sex: ['', Validators.required],
             address: ['', [
-                Validators.pattern('.*\\S.*[a-zA-z0-9 ]'),
+                Validators.pattern('.*\\S.*[a-zA-z0-9 ].* .*'),
                 Validators.maxLength(255),
                 Validators.minLength(1),
                 Validators.required]],
@@ -164,10 +164,11 @@ export class StudentsComponent implements OnInit{
                 Validators.min(1),
                 Validators.max(5),
                 Validators.pattern('[1-5]*'),
-                Validators.required
+                // Validators.required
             ]],
             phone: ['', [
-                Validators.pattern('[0-9]*'),
+                Validators.pattern('((09|03|08|07|05)+([0-9]{8}))'),
+                //Validators.pattern('[0-9]*'),
                 // Validators.pattern('/^[0-9]\d{10}$/'),
                 Validators.minLength(10),
                 Validators.maxLength(10),
@@ -376,13 +377,13 @@ export class StudentsComponent implements OnInit{
     //Phan loai tuyen thang:
     phanLoaiTuyenThang(){
         this.loading = true;
-        var listPhanLoai = <any>document.getElementsByClassName('id-phanloai');
+        //var listPhanLoai = <any>document.getElementsByClassName('id-phanloai');
         var listId = [];
-        listPhanLoai.forEach(td => {
-            var newid = new Id();
-            newid.id = td.dataset.id
-            listId.push(newid);
-        });
+        // listPhanLoai.forEach(td => {
+        //     var newid = new Id();
+        //     newid.id = td.dataset.id
+        //     listId.push(newid);
+        // });
 
         //Check dieu kien tuyen thang:
         for (let i = 0; i < listId.length; i++) {
