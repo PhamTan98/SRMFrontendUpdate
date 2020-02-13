@@ -154,28 +154,28 @@
                             <td class="text-left stt" *ngIf="stt">
                                 {{i+1}}
                             </td>
-                            <td class="text-left" *ngIf="ten">
+                            <td class="text-center" *ngIf="ten">
                                 {{s.FullName}}
                             </td>
-                            <td class="d-none d-md-table-cell" *ngIf="gender">
+                            <td class="d-none d-md-table-cell text-center" *ngIf="gender">
                                 {{s.Sex == 1? 'Nam':'Nữ'}}
                             </td>
-                            <td class="d-none d-md-table-cell text-left" *ngIf="truong">
+                            <td class="d-none d-md-table-cell text-center" *ngIf="truong">
                                 {{s.NameSchool}}
                             </td>
-                            <td class="d-none d-md-table-cell" *ngIf="nam">
+                            <td class="d-none d-md-table-cell text-center" *ngIf="nam">
                                 {{s.Year}}
                             </td>
-                            <td class="d-none d-sm-table-cell text-left" *ngIf="ngonngu">
+                            <td class="d-none d-sm-table-cell text-center" *ngIf="ngonngu">
                                 {{s.NameLanguages}}
                             </td>
 
-                            <td class="d-none d-xl-table-cell" *ngFor="let item of TestSubject, let i=index">
+                            <td class="d-none d-xl-table-cell text-center" *ngFor="let item of TestSubject, let i=index">
                                 <span *ngIf="s.TestMarkDetail != null && checkExistArray(item.Id,s.TestMarkDetail) > -1">
                                     {{s.TestMarkDetail[checkExistArray(item.Id,s.TestMarkDetail)].Point}}
                                 </span>
                             </td>
-                            <td class="d-none d-sm-table-cell text-left">
+                            <td class="d-none d-sm-table-cell text-center">
                                 Test
                             </td>
                             <td class="statuscss" *ngIf="trangthai">

@@ -11,8 +11,22 @@ import { UserService, AuthenticationService } from '../../Authentication/_servic
 import { first, filter } from 'rxjs/operators';
 import { ExportService} from '../../_services/export.service';
 import { DataService} from '../../_services/share-data.service'
-import { FormGroup, Validators, FormBuilder, FormControl, MinLengthValidator } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder, FormControl, MinLengthValidator, ValidatorFn } from '@angular/forms';
 import {trigger, state, transition, animate, style } from '@angular/animations';
+
+// const trimValidator: ValidatorFn = (control: FormControl) => {
+//   if (control.value.startsWith(' ')) {
+//     return {
+//       'trimError': { value: 'control has leading whitespace' }
+//     };
+//   }
+//   if (control.value.endsWith(' ')) {
+//     return {
+//       'trimError': { value: 'control has trailing whitespace' }
+//     };
+//   }
+//   return null;
+// };
 
 @Component({
     selector: 'students-cmp',
@@ -40,6 +54,7 @@ import {trigger, state, transition, animate, style } from '@angular/animations';
 })
 
 export class StudentsComponent implements OnInit{
+    // control = new FormControl('', trimValidator);
     private inputSearch;
     private showDrop = false; loading = false;
     p: number = 1; itemsPerPage = 20;
@@ -115,11 +130,13 @@ export class StudentsComponent implements OnInit{
             name: ['',[
                 Validators.maxLength(255),
                 Validators.minLength(1),
-                Validators.pattern('[a-zA-Z ]*'),
+                //Validators.pattern(' '),
+                Validators.pattern('.*^.*\\S.*[a-zA-z ].* .*'),
                 Validators.required,
             ]],
             sex: ['', Validators.required],
             address: ['', [
+                Validators.pattern('.*\\S.*[a-zA-z0-9 ]'),
                 Validators.maxLength(255),
                 Validators.minLength(1),
                 Validators.required]],
@@ -132,8 +149,8 @@ export class StudentsComponent implements OnInit{
                 Validators.email,
                 Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
             note: ['', [
-                Validators.pattern('[a-zA-Z ]*'),
-               //  Validators.required
+                Validators.pattern('.*\\S.*[a-zA-z0-9 ]'),
+                // Validators.required
             ]],
             school: ['', Validators.required],
             selectNam: ['', Validators.required],
@@ -144,9 +161,10 @@ export class StudentsComponent implements OnInit{
                 Validators.required
             ]],
             jlpt: ['', [
-                Validators.min(0),
+                Validators.min(1),
                 Validators.max(5),
-                // Validators.required
+                Validators.pattern('[1-5]*'),
+                Validators.required
             ]],
             phone: ['', [
                 Validators.pattern('[0-9]*'),
@@ -181,6 +199,11 @@ export class StudentsComponent implements OnInit{
     get u() { return this.UpdateStudentForm.controls; }
     get d() { return this.DetailStudentForm.controls; }
 
+    // public noWhitespaceValidator(control: FormControl) {
+    //     const isWhitespace = (control.value || '').trim().length === 0;
+    //     const isValid = !isWhitespace;
+    //     return isValid ? null : { 'whitespace': true };
+    // }
     //Re-get listStudentApi:
     reloadDataAfterSubmit(){
         this.userService.getAll().pipe(first()).subscribe(response=> {

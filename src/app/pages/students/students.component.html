@@ -354,7 +354,7 @@
 
 </div>
 
-<!-- Modal them moi sv -->
+<!-- Modal add new sv -->
 <div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -367,7 +367,6 @@
 
             <form class="modal-body mx-3" [formGroup]="AddForm" (ngSubmit)="onSubmitAddStudent()">
                 <div class="row">
-
                     <div class="md-form col-md-7 col-sm-12">
                         <i class="fas fa-user prefix grey-text"></i>
                         <input formControlName="name" type="text" id="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
@@ -377,6 +376,7 @@
                             <div *ngIf="f.name.errors.minlength">Tên quá ngắn!</div>
                             <div *ngIf="f.name.errors.maxlength">Tên quá dài!</div>
                             <div *ngIf="f.name.errors.pattern">Tên không hợp lệ!</div>
+                            <!-- <div *ngIf="control.hasError('trimError')"> {{ control.errors.trimError.value }} </div> -->
                         </div>
                     </div>
 
@@ -403,6 +403,7 @@
                             <div *ngIf="f.address.errors.required">Địa chỉ không được để trống!</div>
                             <div *ngIf="f.address.errors.minlength">Địa chỉ quá ngắn!</div>
                             <div *ngIf="f.address.errors.maxlength">Địa chỉ quá dài!</div>
+                            <div *ngIf="f.address.errors.pattern">Địa chỉ không hợp lệ</div>
                         </div>
                     </div>
                 </div>
@@ -435,7 +436,7 @@
                 <div class="row">
                     <div class="md-form col-12">
                         <i class="fas fa-clipboard prefix grey-text"></i>
-                        <input formControlName="note" type="text" id="note" class="form-control " [ngClass]="{ 'is-invalid': submitted && f.note.errors }">
+                        <input formControlName="note" type="text" id="note" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.note.errors }">
                         <label for="note">Ghi chú</label>
                         <div *ngIf="submitted && f.note.errors" class="invalid-feedback">
                             <!-- <div *ngIf="f.note.errors.required">Ghi chú không được để trống!</div> -->
@@ -512,11 +513,12 @@
                     <div class="md-form col-md-5 col-sm-12">
                         <i class="fas fa-graduation-cap prefix grey-text"></i>
                         <input formControlName="jlpt" type="number" id="form30" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.jlpt.errors }">
-                        <label for="form30">JLPT</label>
+                        <label for="form30" class="active">JLPT</label>
                         <div *ngIf="submitted && f.jlpt.errors" class="invalid-feedback">
-                            <!-- <div *ngIf="f.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div> -->
+                            <div *ngIf="f.jlpt.errors.required">Điểm tiếng nhật không được để trống!</div>
                             <div *ngIf="f.jlpt.errors.min">Điểm tiếng nhật không được nhỏ hơn 0!</div>
                             <div *ngIf="f.jlpt.errors.max">Điểm tiếng nhật không được lớn hơn 5!</div>
+                            <div *ngIf="f.jlpt.errors.pattern">Điểm tiếng nhật không hợp lệ</div>
                         </div>
                     </div>
                 </div>
